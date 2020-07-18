@@ -30,6 +30,40 @@ struct iterator {
     typedef Distance    difference_type;
 };
 
+/* iterator traits */ 
+template <class T> 
+struct has_iterator_tag {
+private:
+    struct two {char a; char b;};
+    template <class U> static two test(...);
+    template <class U> static test(typename U::iterator_category* = 0);
+public:
+    static const bool value = sizeof(test<T>(0)) == sizeof(char);
+};
+
+template <class Iterator, bool>
+struct iterator_traits_impl {};
+
+template <class Iterator>
+struct iterator_traits_impl<Iterator, true> {
+    typedef typename Iterator::iterator_category    iterator_category;
+    typedef typename Iterator::value_type           value_type;
+    typedef typename Iterator::pointer              pointer;
+    typedef typename Iterator::reference            reference;
+    typedef typename Iterator::difference_type      difference_type;
+};
+
+template <class Iterator, bool>
+struct iterator_traits_helper {};
+
+template <class Iterator>
+struct iterator_traits_helper<Iterator, true> 
+    : public iterator_traits_impl<Iterator,
+    std::is_convertible<typename Iterator::iterator_category, input_iterator_tag>::value ||
+    std::is_convertible<typename Iterator::iterator_category, output_iterator_tag>::value>
+{
+};
+
 } // namespace saberstl
 
 #endif // SABER_ITERATOR_H__
