@@ -64,6 +64,12 @@ struct iterator_traits_helper<Iterator, true>
 {
 };
 
+// Extract iterator characteristics
+template <class Iterator>
+struct iterator_traits
+    : public iterator_traits_helper<Iterator, has_iterator_cat<Iterator>::value> {};
+
+
 } // namespace saberstl
 
-#endif // SABER_ITERATOR_H__
+#endif 
