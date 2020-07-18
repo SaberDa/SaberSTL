@@ -32,7 +32,7 @@ struct iterator {
 
 /* iterator traits */ 
 template <class T> 
-struct has_iterator_tag {
+struct has_iterator_cat {
 private:
     struct two {char a; char b;};
     template <class U> static two test(...);
@@ -64,10 +64,34 @@ struct iterator_traits_helper<Iterator, true>
 {
 };
 
-// Extract iterator characteristics
+/* Extract iterator characteristics */ 
 template <class Iterator>
 struct iterator_traits
     : public iterator_traits_helper<Iterator, has_iterator_cat<Iterator>::value> {};
+
+/* Partially specialized version for native pointers */
+template <class T>
+struct iterator_traits<T*> {
+    typedef random_access_iterator_tag  iterator_category;
+    typedef T                           value_type;
+    typedef T*                          pointer;
+    typedef T&                          reference;
+    typedef ptrdiff_t                   difference_type;  
+};
+
+template <class T>
+struct iterator_traits<const T*> {
+    typedef random_access_iterator_tag  iterator_category;
+    typedef T                           value_type;
+    typedef const T*                    pointer;
+    typedef const T&                    reference;
+    typedef ptrdiff_t                   difference_type;
+};
+
+template <class T, class U, bool = has_iterator_cat<iterator_traits<T>>::value>
+struct has_iterator_cat_of 
+    :public m_bool_constant<std::is_convertible<
+    typename iterator_traits<T>::iterator_category, U>::value> {};
 
 
 } // namespace saberstl
