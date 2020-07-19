@@ -154,6 +154,19 @@ distance_type (InputIterator first, InputIterator last, input_iterator_tag) {
     return n;
 }
 
+/* random_access_iterator_tag distance */
+template <class RandomIter>
+typename iterator_traits<RandomIter>::difference_type 
+distance_dispatch (RandomIter first, RandomIter last, random_access_iterator_tag) {
+    return last - first;
+}
+
+template <class InputIterator>
+typename iterator_traits<InputIterator>::difference_type
+distance (InputIterator first, InputIterator last) {
+    return distance_dispatch(first, last, iterator_category(first));
+}
+
 } // namespace saberstl
 
 #endif 
