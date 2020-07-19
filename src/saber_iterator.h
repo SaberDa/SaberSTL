@@ -117,6 +117,14 @@ struct is_iterator :
     public s_bool_constant<is_input_iterator<Iterator>::value ||
            is_output_iterator<Iterator>::value> {};
 
+/* Extract iterator category */
+template <class Iterator>
+typename iterator_traits<Iterator>::iterator_category
+iterator_category (const Iterator&) {
+    typedef typename iterator_tarits<Iterator>::iterator_category Category;
+    return Category();
+}
+
 } // namespace saberstl
 
 #endif 
