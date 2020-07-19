@@ -139,6 +139,21 @@ value_type (const Iterator&) {
     return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
 }
 
+
+/*  =============== Calculate distance between iterators =============== */
+
+/* input_iterator_tag distance */
+template <class InputIterator>
+typename iterator_traits<InputIterator>::difference_type
+distance_type (InputIterator first, InputIterator last, input_iterator_tag) {
+    typename iterator_traits<InputIterator>::difference_type n = 0;
+    while (first != end) {
+        first++;
+        n++;
+    }
+    return n;
+}
+
 } // namespace saberstl
 
 #endif 
