@@ -132,6 +132,13 @@ distance_type (const Iterator&) {
     return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
 }
 
+/* Extract iterator value_type */
+template <class Iterator>
+typename iterator_traits<Iterator>::value_type*
+value_type (const Iterator&) {
+    return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
+}
+
 } // namespace saberstl
 
 #endif 
