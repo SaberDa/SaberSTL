@@ -316,15 +316,23 @@ bool operator<(const reverse_iterator<Iterator>& lhs,
 template <class Iterator>
 bool operator>(const reverse_iterator<Iterator>& lhs,
                const reverse_iterator<Iterator>& rhs) {
-    return rhs < lhs;
+    return lhs > rhs;
 }
 
-/* Overload operator != */
+/* Overload operator '!=' */
 template <class Iterator>
 bool operator!=(const reverse_iterator<Iterator>& lhs,
                 const reverse_iterator<Iterator>& rhs) {
     return !(lhs == rhs);
 }
+
+/* Overload operator '<= */
+template <class Iterator>
+bool operator<=(const reverse_iterator<Iterator>& lhs,
+                const reverse_iterator<Iterator>& rhs) {
+    return !(lhs > rhs);
+}
+
 
 } // namespace saberstl
 
