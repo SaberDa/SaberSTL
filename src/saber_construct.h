@@ -38,7 +38,41 @@ namespace saberstl {
         ::new ((void*)ptr) T(saberstl::forward<Args>(args)...);
     }
 
-};
+
+
+    /* ================ Destory: destory the object ================== */
+
+    template <class T>
+    void destory_one(T*, std::true_type) {}
+
+    template <class T>
+    void destory_one(T* pointer, std::false_type) {
+        if (pointer != nullptr)
+            pointer->~T();
+    }
+
+    template <class ForwardIter>
+    void destory_cat(ForwardIter, ForwardIter, std::true_type) {}
+
+    template <class ForwardIter>
+    void destory_cat(ForwardIter first, ForwardIter last, std::false_type) {
+        for (; first != last; first++) 
+            destory(&*first);
+    }
+
+    template <class T>
+    void destory(T *pointer) {
+        destory_one(pointer, std::is_trivially_destructible<T>{});
+    }
+
+    template <class ForwardIter>
+    void destory(ForwardIter first, ForwardIter last) {
+        destory_cat(first, last, std::is_trivially_destructible<
+                    typename iterator_traits<ForwardIter>::value_type>{});
+    }
+} // namespace saberstl
+
+
 
 
 #endif
