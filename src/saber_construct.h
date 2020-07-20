@@ -73,6 +73,8 @@ namespace saberstl {
 } // namespace saberstl
 
 
+#ifdef _SABER_MSC_VER
+#pragma warning(pop)
+#endif // _SABER_MSC_VER
 
-
-#endif
+#endif // !__SABER_CONSTRUCT_H__

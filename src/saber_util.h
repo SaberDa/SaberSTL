@@ -28,6 +28,6 @@ namespace saberstl {
         return static_cast<T&&>(arg);
     }
 
-};
+}
 
 #endif
