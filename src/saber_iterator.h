@@ -198,6 +198,99 @@ void advance(InputIterator& i, Distance n) {
 }
 
 
+
+/**********************************************************************/
+
+/* Template Class: reverse_iterator */
+/* 
+ * Represents a reverse iterator, 
+ * making forward a backward and backward a forward 
+ */ 
+template <class Iterator>
+class reverse_iterator {
+private:
+    Iterator current;           // Record the corresponding forward iterator
+public :
+    /* Five types of reverse_iterator */
+    typedef typename iterator_traits<Iterator>::iterator_category   iterator_category;
+    typedef typename iterator_traits<Iterator>::value_type          value_type;
+    typedef typename iterator_traits<Iterator>::difference_type     difference_type;
+    typedef typename iterator_traits<Iterator>::pointer             pointer;
+    typedef typename iterator_traits<Iterator>::reference           reference;
+
+    typedef Iterator                    iterator_type;
+    typedef reverse_iterator<Iterator>  self;
+
+public:
+    /* Constructor */
+    reverse_iterator() {}
+    explicit reverse_iterator(iterator_type i) : current(i) {}
+    reverse_iterator(const self& rhs) : current(rhs.current) {}
+
+public:
+
+    /* Take out the corresponding forward iterator */
+    iterator_type base() const {
+        return current;
+    } 
+
+    /* Overload operator */
+    reference operator*() const {
+        // Actually corresponds to the previous position of the forward iterator
+        auto tmp = current;
+        return *--tmp;
+    }
+    pointer operator->() const {
+        return &(operator*());
+    }
+
+    /* Make ++ transfer to -- */
+    self& operator++() {
+        current--;
+        return *this;
+    }
+    self operator++(int) {
+        self temp = *this;
+        current--;
+        return temp;
+    }
+
+    /* Make -- transfer to ++ */
+    self& operator--() {
+        current++;
+        return *this;
+    }
+    self operator--(int) {
+        self temp = *this;
+        current++;
+        return temp;
+    }
+
+    self& operator+=(difference_type n) {
+        current -= n;
+        return *this;
+    }
+
+    self& operator+(difference_type n) const {
+        return self(current - n);
+    }
+
+    self& operator-=(difference_type n) {
+        current += n;
+        return *this;
+    }
+
+    self& operator-(difference_type n) const {
+        return self(current + n);
+    }
+
+    reference operator[](difference_type n) const {
+        return *(*this + n);
+    }
+
+};
+
+
 } // namespace saberstl
 
 #endif 
