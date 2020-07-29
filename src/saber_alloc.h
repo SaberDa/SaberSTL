@@ -159,6 +159,38 @@ inline size_t alloc::S_freelist_index(size_t bytes) {
     : (47 + (bytes + EAlign4096 - 2049) / EAlign4096);
 }
 
+/* Refill the free list */
+void* alloc::S_refill(size_t n) {
+    size_t nblock = 10;
+    char *c = S_chunk_alloc(n, nblock);
+    Freelist *my_free_list;
+    Freelist *result, *cur, *next;
+    /*
+     * If there is only one block,
+     * then return this block to the caller,
+     * there is no new node increasing in the free list
+    */
+    if (nblock == 1) return c;
+    /*
+     * Else return one block to the caller,
+     * and add the rest into free list as the new nodes
+    */
+    my_free_list = free_list[S_freelist_index(n)];
+    result = (Freelist*)c;
+    my_free_list = next = (Freelist*)(c + n);
+    for (size_t i = 1; ; i++) {
+        cur = next;
+        next = (Freelist*)((char*)next + n);
+        if (nblock - 1 == i) {
+            cur->next = nullptr;
+            break;
+        } else {
+            cur->next = next;
+        }
+    }
+    return result;
+}
+
 } // saberstl
 
 
