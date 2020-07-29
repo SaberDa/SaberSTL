@@ -143,6 +143,22 @@ inline size_t alloc::S_round_up(size_t bytes) {
     return ((bytes + S_align(bytes) - 1) & ~(S_align(bytes) - 1));
 }
 
+/* According the size of chain, choose the nth free lists */
+inline size_t alloc::S_freelist_index(size_t bytes) {
+    if (bytes <= 512) {
+        return bytes <= 256
+        ? bytes <= 128
+            ? ((bytes + EAlign128 - 1) / EAlign128 - 1)
+            : (15 + (bytes + EAlign256 - 129) / EAlign256) 
+        : (23 + (bytes + EAlign512 - 257) / EAlign512);
+    }
+    return bytes <= 2048
+    ? bytes <= 1024
+        ? (31 + (bytes + EAlign1024 - 513) / EAlign1024)
+        : (39 + (bytes + EAlign2048 - 1025) / EAlign2048)
+    : (47 + (bytes + EAlign4096 - 2049) / EAlign4096);
+}
+
 } // saberstl
 
 
