@@ -113,6 +113,19 @@ inline void alloc::deallocate(void *p, size_t n) {
     my_free_list = q;
 }
 
+/*
+ * Realloc the space.
+ * The function receives three parameters:
+ * p: pointer points to new space
+ * old_size: origin space size
+ * new_size: new space size
+*/
+inline void* alloc::reallocate(void *p, size_t old_size, size_t new_size) {
+    deallocate(p, old_size);
+    p = allocate(new_size);
+    return p;
+}
+
 } // saberstl
 
 
