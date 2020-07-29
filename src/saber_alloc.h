@@ -69,7 +69,36 @@ private:
     static char *S_chunk_alloc(size_t size, size_t& nobj);
 };
 
+/* Initial static variables */
 
+char* alloc::start_free = nullptr;
+char* alloc::end_free = nullptr;
+size_t alloc::heap_size = 0;
+
+Freelist* alloc::free_list[EFreeListsNumber] = {
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,
+    nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr
+};
+
+/* Alloc space of size n, n > 0 */
+inline void* alloc::allocate(size_t n) {
+    Freelist *my_free_list;
+    Freelist *result;
+    if (n > static_cast<size_t>(ESmallObjectBytes)) return std::malloc(n);
+    my_free_list = free_list[S_freelist_index(n)];
+    result = my_free_list;
+    if (result == nullptr) {
+        void *r = S_refill(S_round_up(n));
+        return r;
+    }
+    my_free_list = result->next;
+    return result;
+}
 
 } // saberstl
 
