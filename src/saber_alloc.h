@@ -191,7 +191,70 @@ void* alloc::S_refill(size_t n) {
     return result;
 }
 
+/*
+ * Take space from memory pool to free list.
+ * When the condition is interrupted, we will modify nblock
+*/
+char* alloc::S_chunk_alloc(size_t size, size_t& nblock) {
+    char *result;
+    size_t need_bytes = size * nblock;
+    size_t pool_bytes = end_free - start_free;
+
+    /* If the remaining of memory pool is enough, return it */
+    if (pool_bytes >= need_bytes) {
+        result = start_free;
+        start_free += need_bytes;
+        return result;
+    }
+    /*
+     * If the remaining of memory pool is not enough,
+     * but it can alloc at least one block, return it
+    */
+    else if (pool_bytes >= size) {
+        nblock = pool_bytes / size;
+        need_bytes = size * nblock;
+        result = start_free;
+        start_free += need_bytes;
+        return result;
+    }
+    /* If the remaining of memory pool is less than one block space */
+    else {
+        /* If the memory pool has remaining space, add the space into free list */
+        if (pool_bytes > 0) {
+            Freelist *my_free_list = free_list[S_freelist_index(pool_bytes)];
+            ((Freelist*)start_free)->next = my_free_list;
+            my_free_list = (Freelist*)start_free;
+        }
+
+        /* Apply space for heap */
+        size_t bytes_to_get = (need_bytes << 1) + S_round_up(heap_size >> 4);
+        start_free = (char*)std::malloc(bytes_to_get);
+
+        /* If the space of heap is not enough */
+        if (!start_free) {
+            Freelist *my_free_list, *p;
+            /* Try to find the unused space, and free list with enough size of block */
+            for (size_t i = size; i <= ESmallObjectBytes; i+= S_align(i)) {
+                my_free_list = free_list[S_freelist_index(i)];
+                p = my_free_list;
+                if (p) {
+                    my_free_list = p->next;
+                    start_free = (char*)p;
+                    end_free = start_free + 1;
+                    return S_chunk_alloc(size, nblock);
+                }
+            }
+            std::printf("out of memory");
+            end_free = nullptr;
+            throw std::bad_alloc();
+        }
+        end_free = start_free + bytes_to_get;
+        heap_size += bytes_to_get;
+        return S_chunk_alloc(size, nblock);
+    }
+}
+
 } // saberstl
 
 
-#endif
+#endif   // !SABER_ALLOC_H__
