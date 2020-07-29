@@ -126,6 +126,18 @@ inline void* alloc::reallocate(void *p, size_t old_size, size_t new_size) {
     return p;
 }
 
+/* bytes correspond to the increase in size */
+inline size_t alloc::S_align(size_t bytes) {
+    if (bytes <= 512) {
+        return bytes <= 256 
+        ? bytes <= 128 ? EAlign128 : EAlign256 
+        : EAlign512;
+    }
+    return bytes <= 2048
+    ? bytes <= 1024 ? EAlign1024 : EAlign2048
+    : EAlign4096;
+}
+
 } // saberstl
 
 
