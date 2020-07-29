@@ -100,6 +100,19 @@ inline void* alloc::allocate(size_t n) {
     return result;
 }
 
+/* Free p points to the space of size n, p cannot be 0 */
+inline void alloc::deallocate(void *p, size_t n) {
+    if (n > static_cast<size_t>(ESmallObjectBytes)) {
+        std::free(p);
+        return;
+    }
+    Freelist *q = reinterpret_cast<Freelist*>(p);
+    Freelist *my_free_list;
+    my_free_list = free_list[S_freelist_index(n)];
+    q->next = my_free_list;
+    my_free_list = q;
+}
+
 } // saberstl
 
 
