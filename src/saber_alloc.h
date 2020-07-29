@@ -138,6 +138,11 @@ inline size_t alloc::S_align(size_t bytes) {
     : EAlign4096;
 }
 
+/* Increase the bytes to the corresponding interval size */
+inline size_t alloc::S_round_up(size_t bytes) {
+    return ((bytes + S_align(bytes) - 1) & ~(S_align(bytes) - 1));
+}
+
 } // saberstl
 
 
