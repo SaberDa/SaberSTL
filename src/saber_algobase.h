@@ -60,6 +60,59 @@ const T& min(const T& left, const T& right, Compare comp) {
     return comp(left, right) ? left : right;
 }
 
+/*
+ * iter_swap():
+ * switch two iters' objects
+*/
+template<class FIter1, class FIter2>
+void iter_swap(FIter1 left, FIter2 right) {
+    saberstl::swap(*left, *right);
+}
+
+/*
+ * copy():
+ * copy the elements from the range [first, last) to [result, result + (last - first)) 
+*/
+// copy() in input_iterator_tag
+template<class InputIter, class OutputIter>
+OutputIter
+unchecked_copy_cat(InputIter first, InputIter last, OutputIter result, saberstl::input_iterator_tag) {
+    for (; first != last; first++, result++) *result = *first;
+    return result;
+}
+
+// copy() in random_access_iterator_tag
+template<class RandomIter, class OutputIter>
+OutputIter 
+unchecked_copy_cat(RandomIter first, RandomIter last, OutputIter result, saberstl::random_access_iterator_tag) {
+    for (auto n = last - first; n > 0; n--, first++, result++) *result = *first;
+    return result;
+}
+
+// copy() 
+template<class InputIter, class OutputIter>
+OutputIter
+unchecked_copy(InputIter first, InputIter last, OutputIter result) {
+    return unchecked_copy_cat(first, last, result, iterator_category(first));
+}
+
+// copy() for trivially_copy_assignable
+template<class Tp, class Up>
+typename std::enable_if<
+    std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+    std::is_trivially_constructible<Up>::value,
+    Up*>::type
+unchecked_copy(Tp *first, Tp *last, Up* result) {
+    const auto n = static_cast<size_t>(last - first);
+    if (n != 0) std::memmove(result, first, n * sizeof(Up));
+    return result + n;
+}
+
+template<class InputIter, class OutputIter>
+OutputIter copy(InputIter first, InputIter last, OutputIter result) {
+    return unchecked_copy(first, last, result);
+}
+
 }
 
 
