@@ -41,7 +41,24 @@ const T& max(const T& left, const T& right, Compare comp) {
     return comp(left, right) ? right : left;
 }
 
+/*
+ * min:
+ * choose the smaller one from two elements
+ * when two elements are the same, choose the first one always
+*/
+template<class T>
+const T& min(const T& left, const T& right) {
+    return left < right ? left : right;
+}
 
+/*
+ * min with comp() :
+ * call in overload version
+*/
+template<class T, class Compare>
+const T& min(const T& left, const T& right, Compare comp) {
+    return comp(left, right) ? left : right;
+}
 
 }
 
