@@ -26,11 +26,11 @@ public:
     typedef size_t      size_type;
 
 public:
-    static T* allocator();
-    static T* allocator(size_type n);
+    static T* allocate();
+    static T* allocate(size_type n);
 
-    static void deallocator(T* ptr);
-    static void deallocator(T* ptr, size_type n);
+    static void deallocate(T* ptr);
+    static void deallocate(T* ptr, size_type n);
 
     static void construct(T* ptr);
     static void construct(T* ptr, const T& value);
@@ -43,7 +43,59 @@ public:
     static void destory(T* first, T* last);
 };
 
+template<class T>
+T* allocator<T>::allocate() {
+    return static_cast<T*>(::operator new(sizeof(T)));
+}
 
+template<class T>
+T* allocator<T>::allocate(size_type n) {
+    if (n == 0) return nullptr;
+    return static_cast<T*>(::operator new(n * sizeof(T)));
+}
+
+template<class T>
+void allocator<T>::deallocate(T* ptr) {
+    if (ptr == nullptr) return;
+    ::operator delete(ptr);
+}
+
+template<class T>
+void allocator<T>::deallocate(T* ptr, size_type /*size*/) {
+    if (ptr == nullptr) return;
+    ::operator delete(ptr);
+}
+
+template<class T>
+void allocator<T>::construct(T* ptr) {
+    saberstl::construct(ptr);
+}
+
+template<class T>
+void allocator<T>::construct(T* ptr, const T& value) {
+    saberstl::construct(ptr, value);
+}
+
+template<class T>
+void allocator<T>::construct(T* ptr, T&& value) {
+    saberstl::construct(ptr, saberstl::move(value));
+}
+
+template<class T>
+template<class ...Args>
+void allocator<T>::construct(T* ptr, Args&& ...args) {
+    saberstl::construct(ptr, saberstl::forward<Args>(args)...);
+}
+
+template<class T>
+void allocator<T>::destory(T* ptr) {
+    saberstl::destory(ptr);
+}
+
+template<class T>
+void allocator<T>::destory(T* first, T* last) {
+    saberstl::destory(first, last);
+}
 
 }; // namespace saberstl
 
