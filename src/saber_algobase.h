@@ -162,6 +162,20 @@ copy_backward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIt
     return unchecked_copy_backward(first, last, result);
 }
 
+/*
+ * copy_if()
+ * select the elements which satisfy the operation 'unary_pred' from 
+ * the range [first, last) to the start point at 'result'
+*/
+template<class InputIter, class OutputIter, class UnaryPredicate>
+OutputIter
+copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred) {
+    for (; first != last; first++) {
+        if (unary_pred(*first)) *result++ = *first;
+    }
+    return result;
+}
+
 }
 
 
