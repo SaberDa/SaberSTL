@@ -176,6 +176,31 @@ copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary
     return result;
 }
 
+/*
+ * copy_n():
+ * copy the elements from [first, first + n) to the [result, result + n)
+ * return a pair points to the ends 
+*/
+template<class InputIter, class OutputIter, class Size>
+saberstl::pair<InputIter, OutputIter>
+unchecked_copy_n(InputIter first, Size n, OutputIter result, saberstl::input_iterator_tag) {
+    for (; n > 0; n--, first++, result++) *result = *first;
+    return saberstl::pair<InputIter, OutputIter>(first, result);
+}
+
+template<class RandomIter, class Size, class OutputIter>
+saberstl::pair<RandomIter, OutputIter>
+unchecked_copy_n(RandomIter first, Size n, OutputIter result, saberstl::random_access_iterator_tag) {
+    auto last = first + n;
+    return saberstl::pair<RandomIter, OutputIter>(last, saberstl::copy(first, last, result));
+}
+
+template<class InputIter, class Size, class OutputIter>
+saberstl::pair<InputIter, OutputIter>
+copy_n(InputIter first, Size n, OutputIter result) {
+    return unchecked_copy_n(first, n, result, iterator_category(first));
+}
+
 }
 
 
