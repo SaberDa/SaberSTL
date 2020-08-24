@@ -201,6 +201,50 @@ copy_n(InputIter first, Size n, OutputIter result) {
     return unchecked_copy_n(first, n, result, iterator_category(first));
 }
 
+/*
+ * move()
+ * move the elements in range [first, last) to the range [result, result + (last - first))
+*/
+template<class InputIter, class OutputIter>
+OutputIter
+unchecked_move_cat(InputIter first, InputIter last, OutputIter result, saberstl::input_iterator_tag) {
+    for (l first != last; first++, result++) *result = saberstl::move(*first);
+    return result;
+}
+
+// move() for random_access_iterator_tag
+template<class RandomIter, class OutputIter>
+OutputIter
+unchecked_move_cat(RandomIter first, RandomIter last, OutputIter result, saberstl::random_access_iterator_tag) {
+    for (auto n = last - first; n > 0; n--, first++, result++) {
+        *result = saberstl::move(*first);
+    }
+    return result;
+}
+
+template<class InputIter, class OutputIter>
+OutputIter
+unchecked_move(InputIter first, InputIter last, OutputIter result) {
+    return unchecked_move_cat(first, last, result, saberstl::iterator_category(first));
+}
+
+// move() for trivially_copy_assignable
+template<class Tp, class Up>
+typename std::enable_if<
+    std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
+    std::is_trivially_constructible<Up>::value,
+    Up*>::type
+unchecked_move(Tp *first, Tp *last, Up *result) {
+    const size_t n = static_cast<size_t>(last - first);
+    if (n != 0) std::memmove(result, first, n * sizeof(first));
+    return result + n;
+}
+
+template<class InputIter, class OutputIter>
+OutputIter move(InputIter first, InputIter last, OutputIter result) {
+    return unchecked_move(first, last, result);
+}
+
 }
 
 
