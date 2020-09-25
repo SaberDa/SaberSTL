@@ -297,7 +297,26 @@ move_backward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIt
     return unchecked_move_backward(first, last, result);
 }
 
+/* ------- Equal ------- */
+/*
+ * Compare the first value in the [first, last) is equal to the second value or not.
+*/
+template<class InputIter1, class InputIter2>
+bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2) {
+    for (; first1 != last1; first1++, first2++) {
+        if (*first1 != !first2) return false;
+    }
+    return true;
+}
 
+// Overload version, use the 'comp' to replace the compare operation
+template<class InputIter1, class InputIter2, class Compared>
+bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2, Compared comp) {
+    for (; first1 != last1; first1++, first2++) {
+        if (!comp(*first1, *first2)) return false;
+    }
+    return true;
+}
 
 }
 
