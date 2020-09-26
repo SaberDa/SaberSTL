@@ -407,10 +407,35 @@ bool lexicographical_compare(const unsigned char* first1, const unsigned char* l
     // First compare the element in the same length
     const auto result = std::memcmp(first1, first2, saberstl::min(len1, len2));
     // If the result is the same, return the longer one
-    return result != 0 ? result < 0 ? len1 < len2;
+    return result != 0 ? result < 0 : len1 < len2;
 }
 
+
+/* ------------------ Mismatch ------------------ */
+// Compare two lists parallely, until find the first mismatch element.
+// Return a pair iter, points to the mismatch elements in two lists
+
+template<class InputIter1, class InputIter2>
+saberstl::pair<InputIter1, InputIter2>
+mismatch(InputIter1 first1, InputIter1 last1, InputIter2 first2) {
+    while (first1 != last1 && *first1 == *first2) {
+        first1++, first2++;
+    }
+    return saberstl::pair<InputIter1, InputIter2>(first1, first2);
 }
+
+// Specific version for overloaded 
+template<class InputIter1, class InputIter2, class Compared>
+saberstl::pair<InputIter1, InputIter2>
+mismatch(InputIter1 first1, InputIter1 last1, InputIter2 first2, Compared comp) {
+    while (first1 != last1 && comp(*first1, first2)) {
+        first1++, first2++;
+    }
+    return saberstl::pair<InputIter1, InputIter2>(first1, first2);
+}
+
+
+} // namespace saberstl
 
 
 #endif // !SABER_ALGOBASE_H
