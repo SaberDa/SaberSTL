@@ -371,8 +371,44 @@ void fill(ForwardIter first, ForwardIter last, const T& value) {
     fill_cat(first, last, value, iterator_category(first));
 }
 
+/* ----------------- Lexicographical Compare ----------------- */
+/*
+ * Compare two lists in lexicographical order.
+ * The different situation:
+ * 1. If the first list's element is smaller, return true
+ * 2. If the first list has no left but the second one has, return true
+ * 3. If the second list has no left but the first one has, return false
+ * 4. If both of the two lists has no left, return false
+*/
 
+template<class InputIter1, class InputIter2>
+bool lexicographical_compare(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2) {
+    for (; first1 != last1 && first2 != last2; first1++, first2++) {
+        if (*first1 < *first2) return true;
+        if (*first1 > *first2) return false;
+    }
+    return first1 == last1 && first2 != last2;
+}
 
+// Overloaded version
+template<class InputIter1, class InputIter2, class Compared>
+bool lexicographical_compare(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2, Compared comp) {
+    for (; first1 != last1 && first2 != last2; first1++, first2++) {
+        if (comp(*first1, *first2)) return true;
+        if (comp(*first2, *first1)) return false;
+    }
+    return first1 == last1 && first2 != last2;
+}
+
+// Specific version for const unsigned char*
+bool lexicographical_compare(const unsigned char* first1, const unsigned char* last1, const unsigned char* first2, const unsigned char* last2) {
+    const auto len1 = last1 - first1;
+    const auto len2 = last2 - first2;
+    // First compare the element in the same length
+    const auto result = std::memcmp(first1, first2, saberstl::min(len1, len2));
+    // If the result is the same, return the longer one
+    return result != 0 ? result < 0 ? len1 < len2;
+}
 
 }
 
