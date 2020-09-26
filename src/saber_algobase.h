@@ -354,6 +354,23 @@ OutputIter fill_n(OutputIter first, Size n, const T& value) {
 /*
  * Fill the new value in the range [first, last)
 */
+template<class ForwardIter, class T>
+void fill_cat(ForwardIter first, ForwardIter last, const T& value, saberstl::forward_iterator_tag) {
+    for (; first != last; first++) {
+        *first = value;
+    }
+}
+
+template<class RandomIter, class T> 
+void fill_cat(RandomIter first, RandomIter last, const T& value, saberstl::random_access_iterator_tag) {
+    fill_n(first, last - first, value);
+}
+
+template<class ForwardIter, class T>
+void fill(ForwardIter first, ForwardIter last, const T& value) {
+    fill_cat(first, last, value, iterator_category(first));
+}
+
 
 
 
