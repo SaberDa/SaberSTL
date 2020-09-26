@@ -318,6 +318,45 @@ bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2, Compared comp
     return true;
 }
 
+
+/* ------- Fill n ------- */
+/*
+ * Fill n value from the position 'first'
+*/
+template<class OutputIter, class Size, class T>
+OutputIter unchecked_fill_n(OutputIter first, Size n, const T& value) {
+    for (; n > 0; --n, first++) {
+        *first = value;
+    }
+    return first;
+}
+
+// Specific version for one-byte
+template<class Tp, class Size, class Up>
+typename std::enable_if<
+    std::is_integral<Tp>::value && sizeof(Tp) == 1 &&
+    !std::is_same<Tp, bool>::value &&
+    std::is_integral<Up>::value && sizeof(Up) == 1,
+    Tp*>::type
+unchecked_fill_n(Tp *first, Size n, Up value) {
+    if (n > 0) std::memset(first, (unsigned char)value, (size_t)(n));
+    return first + n;
+}
+
+template<class OutputIter, class Size, class T>
+OutputIter fill_n(OutputIter first, Size n, const T& value) {
+    return unchecked_fill_n(first, n,value);
+}
+
+
+
+/* ------- Fill ------- */
+/*
+ * Fill the new value in the range [first, last)
+*/
+
+
+
 }
 
 
