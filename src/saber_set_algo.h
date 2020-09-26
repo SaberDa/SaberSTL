@@ -85,6 +85,45 @@ OutputIter set_intersection(InputIter1 first1, InputIter1 last1, InputIter2 firs
 }
 
 
+/* ----------- set_difference ----------- */
+/*
+ * Calculate the S1 - S2, and store the result into the result.
+ * Return an iter points the end of result
+*/
+template<class InputIter1, class InputIter2, class OutputIter>
+OutputIter set_difference(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2, OutputIter result) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first1 < *first2) {
+            *result = *first1;
+            first1++;
+            result++;
+        } else if (*first1 > *first2) {
+            first2++;
+        } else {
+            first1++, first2++;
+        }
+    }
+    return saberstl::copy(first1, last1, result);
+}
+
+// Overloaded version
+template<class InputIter1, class InputIter2, class OutputIter, class Compared>
+OutputIter set_difference(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2, OutputIter result, Compared comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first1, *first2)) {
+            *result = *first1;
+            first1++;
+            result++;
+        } else if (comp(*first2, *first1)) {
+            first2++;
+        } else {
+            first1++, first2++;
+        }
+    }
+    return saberstl::copy(first1, last1, result);
+}
+
+
 } // namespace saberstl
 
 
