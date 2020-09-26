@@ -128,6 +128,32 @@ void pop_heap(RandomIter first, RandomIter last, Compared comp) {
     saberstl::pop_heap_aux(first, last - 1, last - 1, *(last - 1), distance_type(first), comp);
 }
 
+
+/* ----------- sort_heap ----------- */
+/*
+ * The function pass two iters, represent the begin and end of a heap container.
+ * Do the operation 'pop_heap' repeatedly, until the diff of start and end is 1
+*/
+template<class RandomIter>
+void sort_heap(RandomIter first, RandomIter last) {
+    // Each time do the 'pop_heap', the max element will move to the end of the heap
+    // When there is only one element left, the sort is finish
+    while (last - first > 1) {
+        saberstl::pop_heap(first, last--);
+    }
+}
+
+// Overloaded version
+template<class RandomIter, class Compared>
+void sort_heap(RandomIter first, RandomIter last, Compared comp) {
+    while (last - first > 1) {
+        saberstl::pop_heap(first, last--, comp);
+    }
+}
+
+
+
+
 } // namespace saberstl
 
 
