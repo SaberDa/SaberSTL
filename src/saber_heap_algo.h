@@ -151,8 +151,46 @@ void sort_heap(RandomIter first, RandomIter last, Compared comp) {
     }
 }
 
+/* ----------- make_heap ----------- */
+/*
+ * The function pass two iters, represent the begin and end of a heap container.
+ * Merge the elements into one heap
+*/
+template<class RandomIter, class Distance>
+void make_heap_aux(RandomIter first, RandomIter last, Distance*) {
+    if (last - first < 2) return;
+    auto len = last - first;
+    auto holeIndex = (len - 2) / 2;
+    while (true) {
+        // Rearrange the child tree with the root node is holeIndex
+        saberstl::adjust_heap(first, holeIndex, len, *(first + holeIndex));
+        if (holeIndex == 0) return;
+        holeIndex--;
+    }
+}
 
+template<class RandomIter>
+void make_heap(RandomIter first, RandomIter last) {
+    saberstl::make_heap_aux(first, last, distance_type(first));
+}
 
+// Overloaded version
+template<class RandomIter, class Distance, class Compared>
+void make_heap_aux(RandomIter first, RandomIter last, Distance*, Compared comp) {
+    if (last - first < 2) return;
+    auto len = last -first;
+    auto holeIndex = (len - 2) / 2;
+    while (true) {
+        saberstl::adjust_heap(first, holeIndex, len, *(first + holeIndex), comp);
+        if (holeIndex == 0) return;
+        holeIndex--;
+    }
+}
+
+template<class RandomIter, class Compared>
+void make_heap(RandomIter first, RandomIter last, Compared comp) {
+    saberstl::make_heap_aux(first, last, distance_type(first), comp);
+}
 
 } // namespace saberstl
 
