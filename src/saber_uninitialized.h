@@ -100,7 +100,7 @@ void unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value, 
 
 template<class ForwardIter, class T>
 void uninitialized_fill(ForwardIter first, ForwardIter last, const T& value) {
-    saberstl::unchecked_uninit_fill(first, last, value
+    saberstl::unchecked_uninit_fill(first, last, value,
                                     std::is_trivially_copy_assignable<
                                     typename iterator_traits<ForwardIter>::
                                     value_type>{});
@@ -133,7 +133,7 @@ ForwardIter unchecked_uninit_fill_n(ForwardIter first, Size n, const T& value, s
 
 template<class ForwardIter, class T, class Size>
 void uninitialized_fill_n(ForwardIter first, Size n, const T& value) {
-    saberstl::unchecked_uninit_fill(first, n, value
+    saberstl::unchecked_uninit_fill(first, n, value,
                                     std::is_trivially_copy_assignable<
                                     typename iterator_traits<ForwardIter>::
                                     value_type>{});
@@ -168,6 +168,40 @@ ForwardIter uninitialized_move(InputIter first, InputIter last, ForwardIter resu
                                            std::is_trivially_copy_assignable<
                                            typename iterator_traits<InputIter>::
                                            value_type>{});
+}
+
+
+/* ---------------- uninitialized_move_n ---------------- */
+/*
+ * Move the element from [first, first + n) to the result
+*/
+template<class InputIter, class Size, class ForwardIter>
+ForwardIter unchecked_uninit_move_n(InputIter first, Size n, ForwardIter result, std::true_type) {
+    return saberstl::move(first, first + n, result);
+}
+
+template<class InputIter, class Size, class ForwardIter>
+ForwardIter unchecked_uninit_move_n(InputIter first, Size n, ForwardIter result, std::false_type) {
+    auto cur = result;
+    try {
+        for (; n > 0; n--, cur++, first++) {
+            saberstl::construct(&*cur, saberstl::move(*first));
+        }
+    } catch (...) {
+        for (; result != cur; result++) {
+            saberstl::destory(&*result);
+        }
+        throw;
+    }
+    return cur;
+}
+
+template<class InputIter, class Size, class ForwardIter> 
+ForwardIter uninitialized_move_n(InputIter first, Size n, ForwardIter result) {
+    return saberstl::unchecked_uninit_move_n(first, n, result,
+                                            std::is_trivially_copy_assignable<
+                                            typename iterator_traits<InputIter>::
+                                            value_type>{});
 }
 
 } // namespace saberstl
