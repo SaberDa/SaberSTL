@@ -140,6 +140,36 @@ void uninitialized_fill_n(ForwardIter first, Size n, const T& value) {
 }
 
 
+/* ---------------- uninitialized_move ---------------- */
+/*
+ * Move the element from [first, last) to the result
+*/
+template<class InputIter, class ForwardIter>
+ForwardIter unchecked_uninit_move(InputIter first, InputIter last, ForwardIter result, std::true_type) {
+    return saberstl::move(first, last, result);
+}
+
+template<class InputIter, class ForwardIter>
+ForwardIter unchecked_uninit_move(InputIter first, InputIter last, ForwardIter result, std::false_type) {
+    auto cur = first;
+    try {
+        for (; first != last; first++, cur++) {
+            saberstl::construct(&*cur, saberstl::move(*first));
+        }
+    } catch (...) {
+        saberstl::destory(result, cur);
+    }
+    return cur;
+}
+
+template<class InputIter, class ForwardIter>
+ForwardIter uninitialized_move(InputIter first, InputIter last, ForwardIter result) {
+    return saberstl::unchecked_uninit_move(first, last, result,
+                                           std::is_trivially_copy_assignable<
+                                           typename iterator_traits<InputIter>::
+                                           value_type>{});
+}
+
 } // namespace saberstl
 
 
