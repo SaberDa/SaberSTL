@@ -75,6 +75,38 @@ ForwardIter uninitialized_copy_n(InputIter first, Size n, ForwardIter result) {
 }
 
 
+/* ---------------- uninitialized_fill ---------------- */
+/*
+ * Fill the elements in range [first, last)
+*/
+template<class ForwardIter, class T>
+void unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value, std::true_type) {
+    saberstl::fill(first, last, value);
+}
+
+template<class ForwardIter, class T>
+void unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value, std::false_type) {
+    auto cur = first;
+    try {
+        for (; cur != last; cur++) {
+            saberstl::construct(&*cur, value);
+        }
+    } catch (...) {
+        for (; first != cur; first++) {
+            saberstl::destory(&*first);
+        }
+    }
+}
+
+template<class ForwardIter, class T>
+void uninitialized_fill(ForwardIter first, ForwardIter last, const T& value) {
+    saberstl::unchecked_uninit_fill(first, last, value
+                                    std::is_trivially_copy_assignable<
+                                    typename iterator_traits<ForwardIter>::
+                                    value_type>{});
+}
+
+
 } // namespace saberstl
 
 
