@@ -41,6 +41,40 @@ ForwardIter uninitialized_copy(IntpuIter first, IntpuIter last, ForwardIter resu
                                                                 value_type>{});
 }
 
+/* ---------------- uninitialized_copy_n ---------------- */
+/*
+ * Copy the element in range [first, first + n) to the space start with the result
+ * Return the position of copy finished
+*/
+template<class InputIter, class ForwardIter, class Size>
+ForwardIter unchecked_uninit_copy_n(InputIter first, Size n, ForwardIter result, std::true_type) {
+    return saberstl::copy_n(first, n, result).second;
+}
+
+template<class InputIter, class ForwardIter, class Size>
+ForwardIter unchecked_uninit_copy_n(InputIter first, Size n, ForwardIter result, std::false_type) {
+    auto cur = result;
+    try {
+        for (; n > 0; n--, first++, cur++) {
+            saberstl::construct(&*cur, first);
+        }
+    } catch (...) {
+        for (; result != cur; result++) {
+            saberstl::destory(&*result);
+        }
+    }
+    return cur;
+}
+
+template<class InputIter, class ForwardIter, class Size>
+ForwardIter uninitialized_copy_n(InputIter first, Size n, ForwardIter result) {
+    return saberstl::unchecked_uninit_copy_n(first, n, result,
+                                             std::is_trivially_copy_assignable<
+                                             typename iterator_traits<InputIter>::
+                                             value_type>{});
+}
+
+
 } // namespace saberstl
 
 
