@@ -100,6 +100,40 @@ void iota(ForwardIter first, ForwardIter last, T value) {
     }
 }
 
+
+/* --------------- partial_sum --------------- */
+/*
+ * Version 1: Calculate the sum of subset, store the result to the range begin with 'result'
+ * Version 2: Do the binary operation on the subset
+*/
+// Version 1
+template<class InputIter, class OutputIter>
+OutputIter partial_sum(InputIter first, InputIter last, OutputIter result) {
+    if (first == last) return result;
+    // Recode the first element
+    *result = *first;
+    auto value = *first;
+    while (first++ != last) {
+        value = value + *first;
+        *++result = value;
+    }
+    return ++result;
+}
+
+// Version 2
+template<class InputIter, class OutputIter, class BinaryOp>
+OutputIter partial_sum(InputIter first, InputIter last, OutputIter result, BinaryOp binary_op) {
+    if (first == last) return result;
+    // Record the first element
+    *result = *first;
+    auto value = *first;
+    while (first++ != last) {
+        value = binary_op(value, *first);
+        *++result = value;
+    }
+    return ++result;
+}
+
 } // namespace saberstl
 
 #endif // !__SABERSTL__NUMERIC_H__
