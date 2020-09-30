@@ -88,6 +88,17 @@ T inner_product(InputIter1 first1, InputIter1 last1, InputIter2 first2, T init, 
 }
 
 
+/* --------------- iota --------------- */
+/*
+ * Fill the elements in range [first, last) with the initial value init
+*/ 
+template<class ForwardIter, class T>
+void iota(ForwardIter first, ForwardIter last, T value) {
+    while (first != last) {
+        *first++ = value;
+        value++;
+    }
+}
 
 } // namespace saberstl
 
