@@ -90,6 +90,26 @@ private:
     void operator=(const temporary_buffer&);
 };
 
+
+/*
+ * construct function
+*/
+template <class ForwardIterator, class T>
+temporary_buffer<ForwardIterator, T> ::
+temporary_buffer(ForwardIterator first, ForwardIterator last) {
+    try {
+        len = saberstl::distance(first, last);
+        allocate_buffer();
+        if (len > 0) {
+            initialize_buffer(*first, std::is_trivially_default_constructible<T>());
+        }
+    } catch (...) {
+        free(buffer);
+        buffer = nullptr;
+        len = 0;
+    }
+}
+
 } // namespace saberstl
 
 
