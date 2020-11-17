@@ -110,6 +110,22 @@ temporary_buffer(ForwardIterator first, ForwardIterator last) {
     }
 }
 
+/*
+ * allocate_buffer function
+*/
+template <class ForwardIterator, class T>
+void temporary_buffer<ForwardIterator, T> :: allocate_buffer() {
+    original_len = len;
+    if (len > static_cast<ptrdiff_t>(INT_MAX / sizeof(T))) {
+        len = INT_MAX / sizeof(T);
+    }
+    while (len > 0) {
+        buffer = static_cast<T*>(malloc(len * sizeof(T)));
+        if (buffer) break;
+        len /= 2;
+    }
+}
+
 } // namespace saberstl
 
 
