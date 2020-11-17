@@ -53,6 +53,43 @@ void release_temporary_buffer(T* ptr) {
     free(ptr);
 }
 
+
+/*
+ * Class template: temporory_buffer
+ * Application and release of temporary buffer zone
+*/ 
+template <class ForwardIterator, class T>
+class temporary_buffer {
+private:
+    ptrdiff_t original_len;     // buffer allocated space
+    ptrdiff_t len;              // buffer actually space
+    T* buffer;                  // pointer to buffer
+public:
+    temporary_buffer(ForwardIterator first, ForwardIterator last);
+
+    ~temporary_buffer() {
+        saberstl::destory(buffer, buffer + len);
+        free(buffer);
+    }
+
+public:
+    ptrdiff_t size() const noexcept { return len; }
+    ptrdiff_t request_size() const noexcept { return original_len; }
+    T* begin() noexcept { return buffer; }
+    T* end() noexcept { return buffer + len; }
+
+private:
+    void allocate_buffer();
+    void initialize_buffer(const T&, std::true_type) {}
+    void initialize_buffer(const T& value, std::false_type) {
+        saberstl::uninitialized_fill_n(buffer, len, value);
+    }
+
+private:
+    temporary_buffer(const temporary_buffer&);
+    void operator=(const temporary_buffer&);
+};
+
 } // namespace saberstl
 
 
