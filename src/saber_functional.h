@@ -55,6 +55,50 @@ struct megate : public unarg_function<T, T> {
     T operator()(const T &x) const { return -x; }
 };
 
+template <class T>
+T identity_element(plus<T>) { return T(0); }
+
+template <class T>
+T identity_element(multiples<T>) { return T(1); }
+
+// Function Object: EQUAL_TO
+template <class T>
+struct equal_to : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x == y; }
+};
+
+// Function object: NOT_EQUAL_TO
+template <class T>
+struct not_equal_to : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x != y; }
+};
+
+// Function object: GREATER
+template <class T>
+struct greater : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x > y; }
+};
+
+// Function object: LESS
+template <class T>
+struct less : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x < y; }
+};
+
+// Function object: GREATER_EQUAL
+template <class T>
+struct greater_equal : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x >= y; }
+};
+
+// Function object: LESS_EQUAL
+template <class T>
+struct less_equal : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x <= y; }
+};
+
+
+
 } // namespace saberstl
 
 #endif // !__SABERSTL__FUNCTIONAL_H_
