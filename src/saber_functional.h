@@ -121,6 +121,22 @@ struct identity : public unarg_function<T, T> {
     const T& operator()(const T &x) const { return x; }
 };
 
+// Select function: receive a pair, return the first element
+template <class Pair>
+struct selectfirst : public unarg_function<Pair, typename Pair::first_type> {
+    const typename Pair::first_type& operator()(const Pair &x) const {
+        return x.first;
+    }
+};
+
+// Select function: receive a pair, return the second element
+template <class Pair>
+struct selectsecond : public unarg_function<Pair, typename Pair::second_type> {
+    const typename Pair::second_type& operator()(const Pair &x) const {
+        return x.second;
+    }
+};
+
 } // namespace saberstl
 
 #endif // !__SABERSTL__FUNCTIONAL_H_
