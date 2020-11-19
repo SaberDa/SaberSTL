@@ -19,6 +19,42 @@ struct binary_function {
 };
 
 
+// Function object: PLUS
+template <class T>
+struct plus : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x + y; }
+};
+
+// Function object: MINUS
+template <class T>
+struct minus : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x - y; }
+};
+
+// Function object: MULTIPLIES
+template <class T>
+struct multiples : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x * y; }
+};
+
+// Function object: DIVIDES
+template <class T>
+struct divides : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x / y; }
+};
+
+// Function object: MODULES
+template <class T>
+struct modules : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x % y; }
+};
+
+// Function object: NEGATE
+template <class T>
+struct megate : public unarg_function<T, T> {
+    T operator()(const T &x) const { return -x; }
+};
+
 } // namespace saberstl
 
 #endif // !__SABERSTL__FUNCTIONAL_H_
