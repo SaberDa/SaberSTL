@@ -97,7 +97,29 @@ struct less_equal : public binary_function<T, T, T> {
     T operator()(const T &x, const T &y) const { return x <= y; }
 };
 
+// Function object: LOGICAL_AND
+template <class T>
+struct logical_and : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x && y; }
+};
 
+// Function object: LOGICAL_OR
+template <class T>
+struct logical_or : public binary_function<T, T, T> {
+    T operator()(const T &x, const T &y) const { return x || y; }
+};
+
+
+// Function object: LOGICAL_NOT
+template <class T>
+struct logical_not : public unarg_function<T, T> {
+    T operator()(const T &x) const { return !x; }
+};
+
+template <class T>
+struct identity : public unarg_function<T, T> {
+    const T& operator()(const T &x) const { return x; }
+};
 
 } // namespace saberstl
 
