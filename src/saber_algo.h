@@ -55,6 +55,20 @@ bool noneof(InputIter first, InputIter last, UnaryPredicate unary_pred) {
     return true;
 }
 
+/*
+ * count
+ * Compare the elements' value which in range [first, last) with the given value. Default use 'operator=='
+ * Return the number of equal elements
+*/
+template <class InputIter, class T> 
+size_t count(InputIter first, InputIter last, const T& value) {
+    size_t n = 0;
+    for (; first != last; first++) {
+        if (*first == value) n++;
+    }
+    return n;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
