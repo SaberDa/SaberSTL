@@ -311,6 +311,32 @@ find_end(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2, ForwardIt
     return saberstl::find_end_dispatch(first1, last1, fist2, last2, Category1(), Category2(), comp);
 }
 
+/*
+ * find_first_of
+ * Find elements which in [first2, last2) in range [first1, last1)
+ * return the iterator which points to the first appear point
+*/
+template <class InputIter, class ForwardIter>
+InputIter find_first_of(InputIter first1, InputIter last1, ForwardIter first2, ForwardIter last2) {
+    for (; first1 != last1; first1++) {
+        for (auto iter = first2; iter != last2; iter++) {
+            if (*first1 == *iter) return first1;
+        }
+    }
+    return last1;
+}
+
+// Overload version, use the 'comp' as the compare function
+template <class InputIter, class ForwardIter, class Compared>
+InputIter find_first_of(InputIter first1, InputIter last1, ForwardIter first2, ForwardIter last2, Compared comp) {
+    for (; first1 != last1; first1++) {
+        for (auto iter = first2; iter != last2; iter++) {
+            if (comp(*first1, *iter)) return first1;
+        }
+    }
+    return last1;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
