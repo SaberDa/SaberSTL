@@ -83,6 +83,17 @@ size_t count_if(InputIter first, InputIter last, UnaryPredicate unary_pred) {
     return n;
 }
 
+/*
+ * find
+ * Find the elements in range [first, last) which value equals to the given value
+ * return the iterator which points to the result element
+*/
+template <class InputIter, class T> 
+InputIter find(InputIter first, InputIter last, const T& value) {
+    while(first != last && *first != value) first++;
+    return first;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
