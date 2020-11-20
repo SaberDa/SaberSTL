@@ -42,6 +42,19 @@ bool any_of(InputIter first, InputIter last, UnaryPredicate unary_pred) {
     return false;
 }
 
+/*
+ * none_of
+ * Check if all the elements in range [first, last) are not satisfy unary operation 'unary_pred' are false
+ * If they are, return true
+*/
+template <class InputIter, class UnaryPredicate>
+bool noneof(InputIter first, InputIter last, UnaryPredicate unary_pred) {
+    for (; first != last; first++) {
+        if (unary_pred(*first)) return false;
+    }
+    return true;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
