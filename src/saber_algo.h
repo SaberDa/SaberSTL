@@ -16,7 +16,18 @@
 
 namespace saberstl {
 
-
+/*
+ * all_of
+ * Check if all elements in range [first, last) satifires 'unary_pred' are 'true'
+ * If they are, return true
+*/
+template <class InputIter, class UnaryPredicate>
+bool all_of(InputIter first, InputIter last, UnaryPredicate unary_pred) {
+    for (; first != last; first++) {
+        if (!unary_pred(*first)) return false;
+    }
+    return true;
+}
 
 }
 
