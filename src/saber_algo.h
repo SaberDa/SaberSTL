@@ -105,6 +105,17 @@ InputIter find_if(InputIter first, InputIter last, UnaryPredicate unary_pred) {
     return first;
 }
 
+/*
+ * find_if_not
+ * Find the first element in range [first, last) which satisfies the unary operation 'unary_pred' is false
+ * return the iterator which points to this element
+*/ 
+template <class InputIter, class UnaryPredicate>
+InputIter find_if_not(InputIter first, InputIter last, UnaryPredicate unary_pred) {
+    while (first != last && unary_pred(*first)) first++;
+    return first;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
