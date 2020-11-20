@@ -69,6 +69,20 @@ size_t count(InputIter first, InputIter last, const T& value) {
     return n;
 }
 
+/*
+ * count_if
+ * Do unary operation for all the elements in range [first, last).
+ * Return the number of elements which result is true
+*/
+template <class InputIter, class UnaryPredicate>
+size_t count_if(InputIter first, InputIter last, UnaryPredicate unary_pred) {
+    size_t n = 0;
+    for (; first != last; first++) {
+        if (unary_pred(*first)) n++;
+    }
+    return n;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
