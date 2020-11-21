@@ -350,6 +350,34 @@ Function for_each(InputIter first, InputIter last, Function f) {
     return f;
 }
 
+/*
+ * adjacent_find
+ * Find the first pair of matching adjacent elements, default using operator==.
+ * If there exists a pair, return a iterator which points to the first element
+*/
+template <class ForwardIter>
+ForwardIter adjacent_find(ForwardIter first, ForwardIter last) {
+    if (first == last) return last;
+    auto next = first;
+    while (++next != last) {
+        if (*next == *first) return first;
+        first = next;
+    }
+    return last;
+}
+
+// Overload version, use the 'comp' as the compare function
+template <class ForwardIter, class Compared> 
+ForwardIter adjacent_find(ForwardIter first, ForwardIter last, Compared comp) {
+    if (first == last) return last;
+    auto next = first;
+    while (++next != last) {
+        if (comp(*first, *next)) return first;
+        first = next;
+    }
+    return last;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
