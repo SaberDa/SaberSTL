@@ -337,6 +337,19 @@ InputIter find_first_of(InputIter first1, InputIter last1, ForwardIter first2, F
     return last1;
 }
 
+/*
+ * for_each
+ * Using a function object 'f' to do operation for every elements in range [first, last) without changing their value
+ * 'f' can return a value, but usually ignore it
+*/
+template <class InputIter, class Function>
+Function for_each(InputIter first, InputIter last, Function f) {
+    for (; first != last; first++) {
+        f(*first);
+    }
+    return f;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
