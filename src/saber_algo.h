@@ -861,6 +861,42 @@ const T& median(const T& left, const T& mid, const T& right) {
     }
 }
 
+
+
+/*
+ * max_element()
+ * Find the max element in the range [first, last)
+ * Return its iterator
+*/
+template <class ForwardIter>
+ForwardIter max_element(ForwardIter first, ForwardIter last) {
+    if (first == last) return first;
+    auto res = first;
+    while (++first != last) {
+        if (*res < *first) res = first;
+    }
+    return res;
+}
+
+// overload version with compare object 'comp'
+template <class ForwardIter, class Compare>
+ForwardIter max_element(ForwardIter first, ForwardIter last, Compare comp) {
+    if (first == last) return first;
+    auto res = first;
+    while (++first != last) {
+        if (comp(*res, *first)) res = first;
+    }
+    return res;
+}
+
+
+/*
+ * min_element()
+ * Find the min element in the range [first, last)
+ * Return its iterator
+*/
+
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
