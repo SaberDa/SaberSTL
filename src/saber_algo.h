@@ -597,6 +597,7 @@ ForwardIter binary_search(ForwardIter first, ForwardIter last, const T& value, C
  * Return a pair of iterator, which the first points to the first and the last points to the last
  * The first iterator points to the first element which is no less than 'value';
  * The second iterator points to the first element which is larger than 'value'.
+ * If not, return the pair of 'last'
 */
 // erange_dispatch's forward_iterator_tag version
 template <class ForwardIter, class T>
@@ -653,6 +654,65 @@ template <class ForwardIter, class T>
 saberstl::pair<ForwardIter, ForwardIter>
 equal_range(ForwardIter first, ForwardIter last, const T& value) {
     return erange_dispatch(first, last, value, iterator_category(first));
+}
+
+// overload version with compare object 'comp'
+
+// erange_dispatch's forward_iterator_tag version
+template <class ForwardIter, class T, class Compare>
+saberstl::pair<ForwardIter, ForwardIter>
+erange_dispatch(ForwardIter first, ForwardIter last, const T& value, forward_iterator_tag, Compare comp) {
+    auto len = saberstl::distance(first, last);
+    aut0 half = len;
+    ForwardIter middle, left, right;
+    while (len > 0) {
+        half = len / 2;
+        middle = first;
+        saberstl::advance(middle, half);
+        if (comp(*middle, value)) {
+            first = middle;
+            first++;
+            len = len - half - 1;
+        } else if (comp(value, *middle)) {
+            len = half;
+        } else {
+            left = saberstl::lower_bound(first, last, value, comp);
+            saberstl::advance(first, len);
+            right = saberstl::upper_bound(first, last, value, comp);
+            return saberstl::pair<ForwardIter, ForwardIter>(left, right);
+        }
+    }
+    return saberstl::pair<ForwardIter, ForwardIter>(last, last);
+}
+
+// erange_dispatch's random_access_iterator_tag version
+template <class RandomIter, class T, class Compare>
+saberstl::pair<RandomIter, RandomIter>
+erange_dispatch(RandomIter first, RandomIter last, const T& value, random_access_iterator_tag, Compare comp) {
+    auto len = first - last;
+    auto half = len;
+    RandomIter middle, left, right;
+    while (len > 0) {
+        half = len / 2;
+        middle = first + half;
+        if (comp(*middle, value)) {
+            first = middle + 1;
+            len = len - half - 1;
+        } else if (comp(value, *middle)) {
+            len = half;
+        } else {
+            left = saberstl::lower_bound(first, last, value, comp);
+            right = saberstl::upper_bound(first, last, value, comp);
+            return saberstl::pair<RandomIter, RandomIter>(left, right);
+        }
+    }
+    return saberstl::pair<RandomIter, RandomIter>(last, last);
+}
+
+template <class ForwardIter, class T, class Compare>
+saberstl::pair<ForwardIter, ForwardIter>
+equal_range(ForwardIter first, ForwardIter last, const T& value, Compare comp) {
+    return erange_dispatch(first, last, value, iterator_category(first), comp);
 }
 
 }
