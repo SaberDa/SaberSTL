@@ -524,6 +524,48 @@ ForwardIter upper_bound(ForwardIter first, ForwardIter last, const T& value) {
     return ubound_dispatch(first, last, value, iterator_category(first));
 }
 
+// Overload Version: Use 'comp' to compare
+
+// ubound_dispatch's forward_iterator_tag version
+template <class ForwardIter, class T, class Compare>
+ForwardIter ubound_dispatch(ForwardIter first, ForwardIter last, const T& value, forward_iterator_tag, Compare comp) {
+    auto len = saberstl::distance(first, last);
+    auto half = len;
+    ForwardIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first + half;
+        saberstl::advance(middle, half);
+        if (comp(value, *middle)) {
+            len = half;
+        } else {
+            first = middle;
+            first++;
+            len = len - half - 1;
+        }
+    }
+    return first;
+}
+
+// ubound_dispatch's random_iterator_tag version
+template <class RandomIter, class T, class Compare>
+RandomIter ubound_dispatch(RandomIter first, RandomIter last, const T& value, random_access_iterator_tag, Compare comp) {
+    auto len = last - first;
+    auto half = len;
+    RandomIter middle;
+    while (len > 2) {
+        half = len / 2;
+        middle = first + half;
+        if (comp(value, *middle)) {
+            len = half;
+        } else {
+            first = middle + 1;
+            len = len - half - 1;
+        }
+    }
+    return first;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
