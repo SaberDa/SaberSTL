@@ -378,6 +378,31 @@ ForwardIter adjacent_find(ForwardIter first, ForwardIter last, Compared comp) {
     return last;
 }
 
+/*
+ * lower_bound
+ * Find the element in the range [first, last) which is no less than the 'value'
+ * Return its iterator, if not return 'last'
+*/
+// lbound_dispatch's forward_iterator_tag version
+template <class ForwardIter, class T>
+ForwardIter lbound_dispatch(ForwardIter first, ForwardIter last, const T& value, forward_iterator_tag) {
+    auto len = saberstl::distance(first, last);
+    auto half = len;
+    ForwardIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first;
+        saberstl::advance(middle, half);
+        if (*middle < value) {
+            first = middle + 1;
+            len = len - half - 1;
+        } else {
+            len = half;
+        }
+    }
+    return first;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
