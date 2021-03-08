@@ -403,6 +403,30 @@ ForwardIter lbound_dispatch(ForwardIter first, ForwardIter last, const T& value,
     return first;
 }
 
+// lbound_dispatch's random_access_iterator_tag version
+template <class RandomIter, class T>
+RandomIter lbound_dispatch(RandomIter first, RandomIter last, const T& value, random_access_iterator_tag) {
+    auto len = last - first;
+    auto half = len;
+    RandomIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first + half;
+        if (*middle < value) {
+            first = middle + 1;
+            len = len - half - 1;
+        } else {
+            len = half;
+        }
+    }
+    return first;
+}
+
+template <class ForwardIter, class T>
+ForwardIter lower_bound(ForwardIter first, ForwardIter last, const T& value) {
+    return saberstl::lbound_dispatch(first, last, value, iterator_category(first));
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
