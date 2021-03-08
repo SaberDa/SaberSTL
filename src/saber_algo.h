@@ -715,6 +715,26 @@ equal_range(ForwardIter first, ForwardIter last, const T& value, Compare comp) {
     return erange_dispatch(first, last, value, iterator_category(first), comp);
 }
 
+
+/*
+ * generate()
+ * Give values to the range [first, last)
+*/
+template <class ForwardIter, class Generator>
+void generate(ForwardIter first, ForwardIter last, Generator gen) {
+    for (; first != last; first++) *first = gen();
+}
+
+
+/*
+ * generate_n()
+ * Given values to the continue size 'n'
+*/
+template <class ForwardIter, class Generate, class Size>
+void generate_n(ForwardIter first, Generate gen, Size n) {
+    for (; n > 0; --n, ++first) *first = gen();
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
