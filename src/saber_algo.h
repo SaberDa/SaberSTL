@@ -796,6 +796,35 @@ bool is_heap(RandomIter first, RandomIter last, Compare comp) {
     return true;
 }
 
+
+/*
+ * is_sorted()
+ * Check if the elements in the range [first, last) are in the ascending
+ * Return true, if not return false
+*/
+template <class ForwardIter>
+bool is_sorted(ForwardIter first, ForwardIter last) {
+    if (first == last) return true;
+    auto next = first;
+    next++;
+    for (; next != last; first = next, next++) {
+        if (*next < *first) return false;
+    }
+    return true;
+}
+
+// overload version with compare object 'comp'
+template <class ForwardIter, class Compare>
+bool is_sorted(ForwardIter first, ForwardIter last, Compare comp) {
+    if (first == last) return true;
+    auto next = first;
+    next++;
+    for (; next != last; first = next, next++) {
+        if (comp(*next, *first)) return false;
+    }
+    return true;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
