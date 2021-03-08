@@ -825,6 +825,42 @@ bool is_sorted(ForwardIter first, ForwardIter last, Compare comp) {
     return true;
 }
 
+
+/*
+ * median()
+ * Find the median element between three elements
+*/
+template <class T>
+const T& median(const T& left, const T& mid, const T& right) {
+    if (left < mid) {
+        if (mid < right) return mid;            // left < mid < right
+        else if (left < right) return right;    // left < right <= mid
+        else return left;                       // right <= left < mid
+    } else if (left < right) {
+        return left;                      // mid <= left < right
+    } else if (mid < right) {
+        return right;                     // mid < right <= left
+    } else {
+        return mid;                       // right <= mid <= left
+    }
+}
+
+// overload version with compare object
+template <class T, class Compare>
+const T& median(const T& left, const T& mid, const T& right) {
+    if (comp(left, mid)) {
+        if (comp(mid, right)) return mid;            // left < mid < right
+        else if (comp(left, right)) return right;    // left < right <= mid
+        else return left;                       // right <= left < mid
+    } else if (comp(left, right)) {
+        return left;                      // mid <= left < right
+    } else if (comp(mid, right)) {
+        return right;                     // mid < right <= left
+    } else {
+        return mid;                       // right <= mid <= left
+    }
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
