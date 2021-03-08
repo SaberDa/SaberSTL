@@ -767,6 +767,35 @@ bool includes(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2
     return first2 == last2;
 }
 
+
+
+/*
+ * is_heap()
+ * Check if the elements in the range [first, last) are in a heap
+*/
+template <class RandomIter>
+bool is_heap(RandomIter first, RandomIter last) {
+    auto n = saberstl::distance(first, last);
+    auto parent = 0;
+    for (auto child = 0; child < n; child++) {
+        if (first[parent] < first[child]) return false;
+        if (child % 2 == 0) ++parent;
+    }
+    return true;
+}
+
+// overload version with compare object
+template <class RandomIter, class Compare>
+bool is_heap(RandomIter first, RandomIter last, Compare comp) {
+    auto n = saberstl::distance(first, last);
+    auto parent = 0;
+    for (auto child = 0; child < n; child++) {
+        if (comp(first[parent], first[child])) return false;
+        if (child % 2 == 0) ++parent;
+    }
+    return true;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
