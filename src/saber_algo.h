@@ -735,6 +735,38 @@ void generate_n(ForwardIter first, Generate gen, Size n) {
     for (; n > 0; --n, ++first) *first = gen();
 }
 
+
+/*
+ * includes()
+ * Check if the input stream S1's elements are less than the input stream S2's elements
+*/
+template <class InputIter1, class InputIter2>
+bool includes(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first2 < *first1) return false;
+        else if (*first1 < *first2) first1++;
+        else {
+            first1++;
+            first2++;
+        }
+    }
+    return first2 == last2;
+}
+
+// overload version with compare object 'comp'
+template <class InputIter1, class InputIter2, class Compare>
+bool includes(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2, Compare comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first2, *first1)) return false;
+        else if (comp(*first1, *first2)) first1++;
+        else {
+            first1++;
+            first2++;
+        }
+    }
+    return first2 == last2;
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
