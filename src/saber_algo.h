@@ -566,6 +566,30 @@ RandomIter ubound_dispatch(RandomIter first, RandomIter last, const T& value, ra
     return first;
 }
 
+template <class ForwardIter, class T, class Compare>
+ForwardIter upper_bound(ForwardIter first, ForwardIter last, const T& value, Compare comp) {
+    return ubound_dispatch(first, last, value, iterator_category(first), comp);
+}
+
+
+/*
+ * binary_search() 
+ * Find the element in the range [first, last) which equals to the 'value'
+ * Return true, if not return false
+*/
+template <class ForwardIter, class T>
+ForwardIter binary_search(ForwardIter first, ForwardIter last, const T& value) {
+    auto i = saberstl::lower_bound(first, last, value);
+    return i != last && !(value < *i);
+}
+
+// overload version with 'comp'
+template <class ForwardIter, class T, class Compare>
+ForwardIter binary_search(ForwardIter first, ForwardIter last, const T& value, Compare comp) {
+    auto i = saberstl::lower_bound(first, last, value, comp);
+    return i != last && !(value < *i);
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
