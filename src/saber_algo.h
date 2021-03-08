@@ -473,6 +473,57 @@ ForwardIter lower_bound(ForwardIter first, ForwardIter last, const T& value, Com
     return lbound_dispatch(first, last, value, iterator_category(first), comp);
 }
 
+
+/*
+ * upper_bound() function
+ * Find element in the range [first, last) which is the first one larger than the 'value'
+ * Return the iterator, if not return first
+*/
+// ubound_dispatch's forward_iterator_tag version
+template <class ForwardIter, class T>
+ForwardIter ubound_dispatch(ForwardIter first, ForwardIter last, const T& value, forward_iterator_tag) {
+    auto len = saberstl::distance(first, last);
+    auto half = len;
+    ForwardIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first;
+        saberstl::advance(middle, half);
+        if (*middle > value) {
+            len = half;
+        } else {
+            first = middle;
+            first++;
+            len = len - half - 1;
+        }
+    }
+    return first;
+}
+
+// ubound_dispatch's random_iterator_tag version
+template <class RandomIter, class T>
+RandomIter ubound_dispatch(RandomIter first, RandomIter last, const T& value, random_access_iterator_tag) {
+    auto len = first - last;
+    auto half = len;
+    RandomIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first + half;
+        if (*middle > value) {
+            len = half;
+        } else {
+            first = middle + 1;
+            len = len - half - 1;
+        }
+    }
+    return first;
+}
+
+template <class ForwardIter, class T>
+ForwardIter upper_bound(ForwardIter first, ForwardIter last, const T& value) {
+    return ubound_dispatch(first, last, value, iterator_category(first));
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
