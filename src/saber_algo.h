@@ -427,6 +427,52 @@ ForwardIter lower_bound(ForwardIter first, ForwardIter last, const T& value) {
     return saberstl::lbound_dispatch(first, last, value, iterator_category(first));
 }
 
+// Overload Version: Use 'comp' to compare
+
+// lbound_dispatch's forward_iterator_tag version
+template <class ForwardIter, class T, class Compare>
+ForwardIter lbound_dispatch(ForwardIter first, ForwardIter last, const T& value, forward_iterator_tag, Compare comp) {
+    auto len = saberstl::distance(first, last);
+    auto half = len;
+    ForwardIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first;
+        saberstl::advance(middle, half);
+        if (comp(*middle, value)) {
+            first = middle + 1;
+            len = len - half - 1;
+        } else {
+            len = half;
+        }
+    }
+    return first;
+}
+
+// lbound_dispatch's random_access_iterator_tag version
+template <class RandomIter, class T, class Compare>
+RandomIter lbound_dispatch(RandomIter first, RandomIter last, const T& value, random_access_iterator_tag, Compare comp) {
+    auto len = last - first;
+    auto half = len;
+    RandomIter middle;
+    while (len > 0) {
+        half = len / 2;
+        middle = first + half;
+        if (comp(*middle, value)) {
+            first = middle + 1;
+            len = len - half - 1;
+        } else {
+            len = half;
+        }
+    }
+    return first;
+}
+
+template <class ForwardIter, class T, class Compare>
+ForwardIter lower_bound(ForwardIter first, ForwardIter last, const T& value, Compare comp) {
+    return lbound_dispatch(first, last, value, iterator_category(first), comp);
+}
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
