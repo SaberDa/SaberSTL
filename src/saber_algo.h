@@ -895,6 +895,26 @@ ForwardIter max_element(ForwardIter first, ForwardIter last, Compare comp) {
  * Find the min element in the range [first, last)
  * Return its iterator
 */
+template <class ForwardIter>
+ForwardIter min_element(ForwardIter first, ForwardIter last) {
+    if (first == last) return true;
+    auto res = first;
+    while (++first != last) {
+        if (*first < *res) res = first;
+    }
+    return res;
+}
+
+// overload version with compare object 'comp'
+template <class ForwardIter, class Compare>
+ForwardIter min_element(ForwardIter first, ForwardIter last, Compare comp) {
+    if (first == last) return true;
+    auto res = first;
+    while (++first != last) {
+        if (comp(*first, *res)) res = first;
+    }
+    return res;
+}
 
 
 }
