@@ -1080,8 +1080,17 @@ void reverse_dispatch(RandomIter first, RandomIter last) {
 
 /*
  * reverse_copy()
- *  
+ * Reverse the elements in the range [first, last) and store the results
 */
+template <class BidirectionalIter, class OutputIter>
+OutputIter reverse_copy(BidirectionalIter first, BidirectionalIter last, OutputIter result) {
+    while (first != last) {
+        last--;
+        *result = *last;
+        result++;
+    }
+    return result;
+}
 
 
 
