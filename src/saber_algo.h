@@ -917,6 +917,170 @@ ForwardIter min_element(ForwardIter first, ForwardIter last, Compare comp) {
 }
 
 
+/*
+ * swap_ranges()
+ * Swap the elements from the range [first1, last1) to the first2
+ * The length of ranges of swapping should be same.
+*/
+template <class ForwardIter1, class ForwardIter2>
+ForwardIter2 swap_ranges(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2) {
+    for (; first1 != last1; first1++, first2++) {
+        saberstl::iter_swap(first1, first2);
+    }
+    return first2;
+}
+
+
+/*
+ * transform()
+ * First version: unary_op: put the each elements in range [first, last) to the result
+ * Second Version: binary_op: put each elements in range [first1, last1) to the range [first2, last2)
+*/
+template <class InputIter, class OutputIter, class UnaryOperation>
+OutputIter transform(InputIter first, InputIter last, OutputIter result, UnaryOperation unary_op) {
+    for (; first != last; ++first, ++result) {
+        *result = unary_op(*first);
+    }
+    return result;
+}
+
+template <class InputIter1, class InputIter2, class OutputIter, class BinaryOperation>
+OutputIter transform(InputIter1 first1, InputIter1 last1, InputIter2 first2, OutputIter result, BinaryOperation binary_op) {
+    for (; first1 != last1; first1++, first2++, result++) {
+        *result = binary_op(first1, first2);
+    }
+    return result;
+}
+
+
+/*
+ * remove_copy()
+ * 
+ * 
+*/
+
+
+/*
+ * remove()
+ * 
+*/
+
+
+/*
+ * remove_copy_if()
+ * 
+*/
+
+
+/*
+ * remove_if() 
+*/
+
+
+
+/*
+ * replace()
+ *  
+*/
+
+
+/*
+ * replace_copy() 
+*/
+
+
+/*
+ * replace_copy_if()
+ *  
+*/
+
+
+/*
+ * replace_if()
+ *  
+*/
+
+
+
+/*
+ * reverse() 
+*/
+
+
+/*
+ * reverse_copy()
+ *  
+*/
+
+
+
+/*
+ * random_shuffle()
+ *  
+*/
+
+
+/*
+ * rotate()
+ *  
+*/
+
+
+/*
+ * rotate_copy()
+ *  
+*/
+
+
+/*
+ * is_permutation()
+ *  
+*/
+
+
+/*
+ * next_permutation()
+ *  
+*/
+
+
+/*
+ * prev_permutation()
+ *  
+*/
+
+
+/*
+ * merge()
+ * 
+ *  
+*/
+
+
+/*
+ * inplace_merge()
+ *  
+*/
+
+
+/*
+ * partital_sort() 
+ * 
+*/
+
+
+/*
+ * partial_sort_copy()
+ * 
+ *  
+*/
+
+
+/*
+ * partition()
+ *  
+*/
+
 }
 
 #endif // !__SABERSTL__ALGO_H_
