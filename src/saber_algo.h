@@ -1074,8 +1074,13 @@ void reverse_dispatch(BidirectionalIter first, BidirectionalIter last, bidirecti
 }
 // Random_access_iterator_tag version
 template <class RandomIter>
-void reverse_dispatch(RandomIter first, RandomIter last) {
+void reverse_dispatch(RandomIter first, RandomIter last, bidirectional_iterator_tag) {
     saberstl::reverse_dispatch(first, last, iterator_category(first));
+}
+
+template <class ForwardIter>
+void reverse(ForwardIter first, ForwardIter last) {
+    return reverse_dispatch(first, last, iterator_category(first));
 }
 
 /*
@@ -1122,8 +1127,104 @@ void random_shuffle(RandomIter first, RandomIter last, RandomNumberGenerator ran
 
 /*
  * rotate()
- *  
+ * Replace each element in range [first, middle) with the elements in range [middle, last)
+ * Can rotate two different ranges with different length
+ * Return the middle iterator
 */
+// forward_iterator_tag version
+template <class ForwardIter>
+ForwardIter rotate_dispatch(ForwardIter first, ForwardIter middle, ForwardIter last, forward_iterator_tag) {
+    auto first2 = middle;
+    // Move the second part to the front
+    do {
+        saberstl::swap(*first++, *first2++);
+        if (first == middle) middle = first2;
+    } while (first2 != last);
+    // The iterator we return
+    auto new_middle = first;
+    first2 = middle;
+    // Swap the rest elements
+    while (first2 != last) {
+        saberstl::swap(*first++, *first2++);
+        if (first == middle) middle = first2;
+        else if (first2 == last) first2 = middle;
+    }
+    return new_middle;
+}
+
+// Bidirectional_iterator_tag version
+template <class BidirectionalIter>
+BidirectionalIter rotate_dispatch(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, bidirectional_iterator_tag) {
+    saberstl::reverse_dispatch(first, middle, bidirectional_iterator_tag());
+    saberstl::reverse_dispatch(middle, last, bidirectional_iterator_tag());
+    while (first != middle && middle != last) saberstl::swap(*first++, *--last);
+    if (first == middle) {
+        saberstl::reverse_dispatch(middle, last, bidirectional_iterator_tag());
+        return last;
+    } else {
+        saberstl::reverse_dispatch(first, middle, bidirectional_iterator_tag());
+        return first;
+    }
+}
+
+
+// GCD()
+template <class EuclideanRingElement>
+EuclideanRingElement GCD(EuclideanRingElement m, EuclideanRingElement n) {
+    while (n != 0) {
+        auto t = m % n;
+        m = n;
+        n = t;
+    }
+    return m;
+}
+
+// random_access_iterator_tag version
+template <class RandomIter>
+RandomIter rotate_dispatch(RandomIter first, RandomIter middle, RandomIter last, random_access_iterator_tag) {
+    auto n = last - first;
+    auto l = middle - first;
+    auto r = n - l;
+    auto res = first + (last - middle);
+    if (l == r) {
+        saberstl::swap_ranges(first, middle, last);
+        return res;
+    }   
+    auto cycle_times = GCD(n, l);
+    for (auto i = 0; i < cycle_times; i++) {
+        auto temp = *first;
+        auto p = first;
+        if (l < r) {
+            for (auto j = 0; j < r / cycle_times; j++) {
+                if (p > first + r) {
+                    *p = *(p -r);
+                    p -= r;
+                }
+                *p = *(p + l);
+                p += l;
+            }
+        } else {
+            for (auto j = 0; j < l / cycle_times - 1; j++) {
+                if (p < last - 1) {
+                    *p = *(p + l);
+                    p += l;
+                } 
+                *p = *(p - r);
+                p -= r;
+            }
+        }
+        *p = temp;
+        first++;
+    }
+    return res;
+}
+
+template <class ForwardIter>
+ForwardIter rotate(ForwardIter first, ForwardIter middle, ForwardIter last) {
+    if (first == middle) return last;
+    if (middle == last) return first;
+    return saberstl::rotate_dispatch(first, middle, last, iterator_category(first));
+}
 
 
 /*
