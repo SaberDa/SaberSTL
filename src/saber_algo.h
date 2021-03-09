@@ -955,9 +955,15 @@ OutputIter transform(InputIter1 first1, InputIter1 last1, InputIter2 first2, Out
 
 /*
  * remove_copy()
- * 
- * 
+ * Remove the elements which equal to the 'value', and store the final result into the init point of 'result'
 */
+template <class InputIter, class OutputIter, class T>
+OutputIter remove_copy(InputIter first, InputIter last, OutputIter result, const T& value) {
+    for (; first != last; first++) {
+        if (*first != value) *result++ = *first;
+    }
+    return result;
+}
 
 
 /*
