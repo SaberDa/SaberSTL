@@ -1022,7 +1022,15 @@ void replace(ForwardIter first, ForwardIter last, const T& old_value, const T& n
 
 /*
  * replace_copy() 
+ * Replace all 'old_value' to 'new_value', and store the new results into 'result'
 */
+template <class InputIter, class OutputIter, class T>
+OutputIter replace_copy(InputIter first, InputIter last, OutputIter result, const T& old_value, const T& new_value) {
+    for (; first != last; ++first, ++result) {
+        *result = *first == old_value ? new_value : *first;
+    }
+    return result;
+}
 
 
 /*
