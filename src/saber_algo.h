@@ -1096,8 +1096,28 @@ OutputIter reverse_copy(BidirectionalIter first, BidirectionalIter last, OutputI
 
 /*
  * random_shuffle()
- *  
+ * Sort the elements in range [first, last) randomly
 */
+template <class RandomIter>
+void random_shuffle(RandomIter first, RandomIter last) {
+    if (first == last) return;
+    srand((unsigned)time(0));
+    for (auto i = first + 1; i != last; i++) {
+        saberstl::iter_swap(i, first + (rand() % (i - first + 1)));
+    }
+    return;
+}
+
+// overload version: use rand()
+template <class RandomIter, class RandomNumberGenerator>
+void random_shuffle(RandomIter first, RandomIter last, RandomNumberGenerator rand) {
+    if (first == last) return;
+    auto len = saberstl::distance(first, last);
+    for (auto i = first + 1; i != last; i++) {
+        saberstl::iter_swap(i, first + (rand(i - first + 1) % len));
+    }
+    return;
+}
 
 
 /*
