@@ -968,8 +968,16 @@ OutputIter remove_copy(InputIter first, InputIter last, OutputIter result, const
 
 /*
  * remove()
- * 
+ * Remove the elements which equal to 'value'
+ * Because we do not delete these elements from the container, we cannot use the 'remove()' and 'remove_if()' on the array
 */
+template <class ForwardIter, class T>
+ForwardIter remove(ForwardIter first, ForwardIter last, const T& value) {
+    // Find the first index 
+    first = saberstl::find(first, last, value);
+    auto next = first;
+    return first == last ? first : saberstl::remove_copy(++next, last, first, value);
+}
 
 
 /*
