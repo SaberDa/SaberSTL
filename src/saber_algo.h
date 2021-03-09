@@ -1048,8 +1048,15 @@ OutputIter replace_copy_if(InputIter first, OutputIter last, OutputIter result, 
 
 /*
  * replace_if()
- *  
+ * Replace the elements which make the unary_op return 'true'
 */
+template <class ForwardIter, class UnaryPredicate, class T>
+void replace_if(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred, const T& new_value) {
+    for (; first != last; ++first) {
+        if (unary_pred(*first)) *first = new_value;
+    }
+    return;
+}
 
 
 
