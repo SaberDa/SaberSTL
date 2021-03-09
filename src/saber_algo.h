@@ -997,8 +997,14 @@ OutputIter remove_copy_if(InputIter first, InputIter last, OutputIter result, Un
 
 /*
  * remove_if() 
+ * Remove the elements which make the unary_op return 'true'
 */
-
+template <class ForwardIter, class UnaryPredicate>
+ForwardIter remove_if(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred) {
+    first = saberstl::find_if(first, last, unary_pred);
+    auto next = first;
+    return first == last ? first : saberstl::remove_copy_if(++next, last, first, unary_pred);
+}
 
 
 /*
