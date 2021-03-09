@@ -982,8 +982,17 @@ ForwardIter remove(ForwardIter first, ForwardIter last, const T& value) {
 
 /*
  * remove_copy_if()
- * 
+ * Remove the elements which make the unary_op return 'true', and copy the result into 'result'
 */
+template <class InputIter, class OutputIter, class UnaryPredicate>
+OutputIter remove_copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred) {
+    for (; first != last; ++first) {
+        if (!unary_pred(*first)) {
+            *result++ = *first;
+        }
+    }
+    return result;
+}
 
 
 /*
