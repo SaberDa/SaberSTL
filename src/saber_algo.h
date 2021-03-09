@@ -1009,8 +1009,15 @@ ForwardIter remove_if(ForwardIter first, ForwardIter last, UnaryPredicate unary_
 
 /*
  * replace()
- *  
+ * Replace all 'old_value' to 'new_value'
 */
+template <class ForwardIter, class T>
+void replace(ForwardIter first, ForwardIter last, const T& old_value, const T& new_value) {
+    for (; first != last; ++first) {
+        if (*first == old_value) *first = new_value;
+    }
+    return;
+}
 
 
 /*
