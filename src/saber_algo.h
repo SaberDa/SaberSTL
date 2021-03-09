@@ -1035,8 +1035,15 @@ OutputIter replace_copy(InputIter first, InputIter last, OutputIter result, cons
 
 /*
  * replace_copy_if()
- *  
+ * Replace the elements which make the unary_op return 'true' and store the results into 'result'
 */
+template <class InputIter, class OutputIter, class UnaryPredicate, class T>
+OutputIter replace_copy_if(InputIter first, OutputIter last, OutputIter result, UnaryPredicate unary_pred, const T& new_value) {
+    for (; first != last; ++first, ++result) {
+        *result = unary_pred(*first) ? new_value : *first;
+    }
+    return result;
+}
 
 
 /*
