@@ -1062,8 +1062,21 @@ void replace_if(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred, 
 
 /*
  * reverse() 
+ * Reverse the elements in the range [first, last)
 */
-
+// BidirectionalIter version
+template <class BidirectionalIter>
+void reverse_dispatch(BidirectionalIter first, BidirectionalIter last, bidirectional_iterator_tag) {
+    while (true) {
+        if (first == last || first == --last) return;
+        saberstl::iter_swap(first++, last);
+    }
+}
+// Random_access_iterator_tag version
+template <class RandomIter>
+void reverse_dispatch(RandomIter first, RandomIter last) {
+    saberstl::reverse_dispatch(first, last, iterator_category(first));
+}
 
 /*
  * reverse_copy()
