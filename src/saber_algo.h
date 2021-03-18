@@ -1405,10 +1405,35 @@ bool prev_permutation(BidirectionalIter first, BidirectionalIter last, Compare c
 
 /*
  * merge()
- * 
- *  
+ * Merge two sorted collections S1 and S2.
+ * Return the iterator points to the next position of the last element
 */
+template <class InputIter1, class InputIter2, class OutputIter>
+OutputIter merge(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2, OutputIter result) {
+    while (first1 != last1 && first2 != last2) {
+        if (*first2 < *first1) {
+            *result = *first2++;
+        } else {
+            *result = *first1++;
+        }
+        result++;
+    }
+    return saberstl::copy(first2, last2, saberstl::copy(first1, last1, result));
+}
 
+// overload version with compare object
+template <class InputIter1, class InputIter2, class OutputIter, class Compare>
+OutputIter merge(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIter2 last2, OutputIter result, Compare comp) {
+    while (first1 != last1 && first2 != last2) {
+        if (comp(*first1, *first2)) {
+            *result = *first2++;
+        } else {
+            *result = *first1++;
+        }
+        result++;
+    }
+    return saberstl::copy(first2, last2, saberstl::copy(first1, last1, result));
+}
 
 /*
  * inplace_merge()
