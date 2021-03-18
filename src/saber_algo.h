@@ -1311,8 +1311,49 @@ bool is_permutation(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2
 
 /*
  * next_permutation()
- *  
+ * Get the next permutation of range [first, last)
+ * If the range does not have next permutation, return false
 */
+template <class BidirectionalIter>
+bool next_permutation(BidirectionalIter first, BidirectionalIter last) {
+    auto i = last;
+    if (first == last || first == --i) return false;
+    while (true) {
+        auto ii = i;
+        if (*--i < *ii) {
+            auto j = last;
+            while (!(*i < *--j)) {}
+            saberstl::iter_swap(i, j);
+            saberstl::reverse(ii, last);
+            return true;
+        }
+        if (i == first) {
+            saberstl::reverse(first, last);
+            return false;
+        }
+    }
+}
+
+// overload version, use compare object
+template <class BidirectionalIter, class Compare>
+bool next_permutation(BidirectionalIter first, BidirectionalIter last, Compare comp) {
+    auto i = last;
+    if (first == last || first == --i) return false;
+    while (true) {
+        auto ii = i;
+        if (comp(*--i, *ii)) {
+            auto j = last;
+            while (!comp(*i, *--j)) {}
+            saberstl::iter_swap(i, j);
+            saberstl::reverse(ii, last);
+            return true;
+        }
+        if (i == first) {
+            saberstl::reverse(first, last);
+            return false;
+        }
+    }
+}
 
 
 /*
