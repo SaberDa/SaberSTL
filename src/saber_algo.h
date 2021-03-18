@@ -1229,8 +1229,12 @@ ForwardIter rotate(ForwardIter first, ForwardIter middle, ForwardIter last) {
 
 /*
  * rotate_copy()
- *  
+ * Store the results after rotate()
 */
+template <class ForwardIter, class OutputIter>
+ForwardIter rotate_copy(ForwardIter first, ForwardIter middle, ForwardIter last, OutputIter result) {
+    return saberstl::copy(first, middle, saberstl::copy(middle, last, result));
+}
 
 
 /*
