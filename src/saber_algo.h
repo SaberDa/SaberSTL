@@ -1437,9 +1437,219 @@ OutputIter merge(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIt
 
 /*
  * inplace_merge()
- *  
+ * Merge and make them inplace with two connected and sorted collects
 */
+// Merge without buffer
+template <class BidirectionalIter, class Distance>
+void merge_without_buffer(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, Distance len1, Distance len2) {
+    if (len1 == 0 || len 2 == 0) return;
+    if (len1 + len2 == 2) {
+        if (*middle < *first) saberstl::iter_swap(first, middle);
+        return;
+    }
+    auto first_cut = first;
+    auto second_cut = middle;
+    Distance len11 = 0, len22 = 0;
+    if (len1 > len2) {
+        // Collect 1 is longer, find the middle point
+        len11 = len1 >> 1;
+        saberstl::advance(first_cut, len11);
+        second_cut = saberstl::lower_bound(middle, last, *first_cut);
+        len22 = saberstl::distance(middle, second_cut);
+    } else {
+        // Collect 2 is longer, find the middle point
+        len22 = len2 >> 1;
+        saberstl::advance(second_cut, len22);
+        first_cut = saberstl::upper_bound(first, middle, *second_cut);
+        len11 = saberstl::distance(first, first_cut);
+    }
+    auto new_middle = saberstl::rotate(first_cut, middle, second_cut);
+    saberstl::merge_without_buffer(first, first_cut, new_middle, len11, len22);
+    saberstl::merge_without_buffer(new_middle, second_cut, last, len1 - len11, len2 - len22);
+}
 
+template <class BidirectionalIter1, class BidirectionalIter2>
+BidirectionalIter1 merge_backward(BidirectionalIter1 first1, BidirectionalIter1 last1, BidirectionalIter2 first2, BidirectionalIter2 last2, BidirectionalIter1 result) {
+    if (first1 == last1) return saberstl::copy_backward(first2, last2, result);
+    if (first2 == last2) return saberstl::copy_backward(first1, last1, result);
+    last1--;
+    last2--;
+    while (true) {
+        if (*last2 < *last1) {
+            *--result = *last1;
+            if (first1 == last1) return saberstl::copy_backward(first2, ++last2, result);
+            last1--;
+        } else {
+            *--result = *last2;
+            if (first2 == last2) return saberstl::copy_backward(first1, ++last1, result);
+            last2--;
+        }
+    }
+}
+
+template <class BidirectionalIter1, class BidirectionalIter2, class Distance>
+BidirectionalIter1 rotate_adaptive(BidirectionalIter1 first, BidirectionalIter1 middle, BidirectionalIter1 last, Distance len1, Distance len2, BidirectionalIter2 buffer, Distance buffer_size) {
+    BidirectionalIter2 buffer_end;
+    if (len1 > len2 && len2 <= buffer_size) {
+        buffer_end = saberstl::copy(middle, last, buffer);
+        saberstl::copy_backward(first, middle, last);
+        return saberstl::copy(buffer, buffer_end, first);
+    } else if (len1 <= buffer_size) {
+        buffer_end = saberstl::copy(first, middle, buffer);
+        saberstl::copy(middle, last, first);
+        return saberstl::copy_backward(buffer, buffer_end, last);
+    } else {
+        return saberstl::rotate(first, middle, last);
+    }
+}
+
+// Merge with buffer
+template <class BidirectionalIter, class Distance, class Pointer>
+void merge_adaptive(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, Distance len1, Distance len2, Pointer buffer, Distance buffer_size) {
+    // buffer has enough length
+    if (len1 <= len2 && len1 <= buffer_size) {
+        Pointer buffer_end = saberstl::copy(first, middle, buffer);
+        saberstl::merge(buffer, buffer_end, middle, last, first);
+    } else if (len2 <= buffer_size) {
+        Pointer buffer_end = saberstl::copy(middle, last, buffer);
+        saberstl::merge(first, middle, buffer, buffer_end, last);
+    } else {
+        // buffer does not have enough length, divide and conquer
+        auto first_cut = first;
+        auto second_cut = middle;
+        Distance len11 = 0, len22 = 0;
+        if (len1 > len2) {
+            len11 = len1 >> 1;
+            saberstl::advance(first_cut, len11);
+            second_cut = saberstl::lower_bound(middle, last, *first_cut);
+            len22 = saberstl::distance(middle, second_cut);
+        } else {
+            len22 = len2 >> 1;
+            saberstl::advance(second_cut, len22);
+            first_cut = saberstl::upper_bound(first, middle, *second_cut);
+            len11 = saberstl::distance(first, first_cut);
+        }
+        auto new_middle = saberstl::rotate_adaptive(first_cut, middle, second_cut, len1 - len11, len22, buffer, buffer_size);
+        saberstl::merge_adaptive(first, first_cut, new_middle, len11, len22, buffer, buffer_size);
+        saberstl::merge_adaptive(new_middle, second_cut, last, len1 - len11, len2 - len22, buffer, buffer_size);
+    }
+}
+
+template <class BidirectionalIter, class T>
+void inplace_merge_aux(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, T*) {
+    auto len1 = saberstl::distance(first, middle);
+    auto len2 = saberstl::distance(middle, last);
+    temporary_buffer<BidirectionalIter, T> buf(first, last);
+    if (!buf.begin()) {
+        saberstl::merge_without_buffer(first, middle, last, len1, len2);
+    } else {
+        saberstl::merge_adaptive(first, middle, last, len1, len2, buf.begin(), buf.size());
+    }
+}
+
+template <class BidirectionalIter>
+void inplace_merge(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last) {
+    if (first == middle || middle == last) return;
+    saberstl::inplace_merge_aux(first, middle, last, value_type(first));
+}
+
+// overload version with compare object
+template <class BidirectionalIter, class Distance, class Compare>
+void merge_without_buffer(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, Distance len1, Distance len2, Compare comp) {
+    if (len1 == 0 || len 2 == 0) return;
+    if (len1 + len2 == 2) {
+        if (comp(*middle, *first)) saberstl::iter_swap(first, middle);
+        return;
+    }
+    auto first_cut = first;
+    auto second_cut = middle;
+    Distance len11 = 0, len22 = 0;
+    if (len1 > len2) {
+        // Collect 1 is longer, find the middle point
+        len11 = len1 >> 1;
+        saberstl::advance(first_cut, len11);
+        second_cut = saberstl::lower_bound(middle, last, *first_cut);
+        len22 = saberstl::distance(middle, second_cut);
+    } else {
+        // Collect 2 is longer, find the middle point
+        len22 = len2 >> 1;
+        saberstl::advance(second_cut, len22);
+        first_cut = saberstl::upper_bound(first, middle, *second_cut);
+        len11 = saberstl::distance(first, first_cut);
+    }
+    auto new_middle = saberstl::rotate(first_cut, middle, second_cut);
+    saberstl::merge_without_buffer(first, first_cut, new_middle, len11, len22);
+    saberstl::merge_without_buffer(new_middle, second_cut, last, len1 - len11, len2 - len22);
+}
+
+template <class BidirectionalIter1, class BidirectionalIter2, class Compare>
+BidirectionalIter1 merge_backward(BidirectionalIter1 first1, BidirectionalIter1 last1, BidirectionalIter2 first2, BidirectionalIter2 last2, BidirectionalIter1 result, Compare comp) {
+    if (first1 == last1) return saberstl::copy_backward(first2, last2, result);
+    if (first2 == last2) return saberstl::copy_backward(first1, last1, result);
+    last1--;
+    last2--;
+    while (true) {
+        if (comp(*last2, *last1)) {
+            *--result = *last1;
+            if (first1 == last1) return saberstl::copy_backward(first2, ++last2, result);
+            last1--;
+        } else {
+            *--result = *last2;
+            if (first2 == last2) return saberstl::copy_backward(first1, ++last1, result);
+            last2--;
+        }
+    }
+}
+
+// Merge with buffer
+template <class BidirectionalIter, class Distance, class Pointer, class Compare>
+void merge_adaptive(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, Distance len1, Distance len2, Pointer buffer, Distance buffer_size, Compare comp) {
+    // buffer has enough length
+    if (len1 <= len2 && len1 <= buffer_size) {
+        Pointer buffer_end = saberstl::copy(first, middle, buffer);
+        saberstl::merge(buffer, buffer_end, middle, last, first, comp);
+    } else if (len2 <= buffer_size) {
+        Pointer buffer_end = saberstl::copy(middle, last, buffer);
+        saberstl::merge(first, middle, buffer, buffer_end, last, comp);
+    } else {
+        // buffer does not have enough length, divide and conquer
+        auto first_cut = first;
+        auto second_cut = middle;
+        Distance len11 = 0, len22 = 0;
+        if (len1 > len2) {
+            len11 = len1 >> 1;
+            saberstl::advance(first_cut, len11);
+            second_cut = saberstl::lower_bound(middle, last, *first_cut, comp);
+            len22 = saberstl::distance(middle, second_cut);
+        } else {
+            len22 = len2 >> 1;
+            saberstl::advance(second_cut, len22);
+            first_cut = saberstl::upper_bound(first, middle, *second_cut, comp);
+            len11 = saberstl::distance(first, first_cut);
+        }
+        auto new_middle = saberstl::rotate_adaptive(first_cut, middle, second_cut, len1 - len11, len22, buffer, buffer_size);
+        saberstl::merge_adaptive(first, first_cut, new_middle, len11, len22, buffer, buffer_size, comp);
+        saberstl::merge_adaptive(new_middle, second_cut, last, len1 - len11, len2 - len22, buffer, buffer_size, comp);
+    }
+}
+
+template <class BidirectionalIter, class T, class Compare>
+void inplace_merge_aux(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, T*, Compare comp) {
+    auto len1 = saberstl::distance(first, middle);
+    auto len2 = saberstl::distance(middle, last);
+    temporary_buffer<BidirectionalIter, T> buf(first, last);
+    if (!buf.begin()) {
+        saberstl::merge_without_buffer(first, middle, last, len1, len2, comp);
+    } else {
+        saberstl::merge_adaptive(first, middle, last, len1, len2, buf.begin(), buf.size(), comp);
+    }
+}
+
+template <class BidirectionalIter, class Compare>
+void inplace_merge(BidirectionalIter first, BidirectionalIter middle, BidirectionalIter last, Compare comp) {
+    if (first == middle || middle == last) return;
+    saberstl::inplace_merge_aux(first, middle, last, value_type(first), comp);
+}
 
 /*
  * partital_sort() 
@@ -1457,6 +1667,36 @@ OutputIter merge(InputIter1 first1, InputIter1 last1, InputIter2 first2, InputIt
 /*
  * partition()
  *  
+*/
+
+
+/*
+ * partition_copy()
+ * 
+*/
+
+
+/*
+ * sort()
+ * 
+*/
+
+
+/*
+ * nth_element()
+ * 
+*/
+
+
+/*
+ * unique_copy()
+ * 
+*/
+
+
+/*
+ * unique()
+ * 
 */
 
 }
