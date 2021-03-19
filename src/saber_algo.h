@@ -1652,9 +1652,27 @@ void inplace_merge(BidirectionalIter first, BidirectionalIter middle, Bidirectio
 }
 
 /*
- * partital_sort() 
- * 
+ * partial_sort() 
+ * Partial sort the entire sequence, and keep the N smaller elements with increasing in the range [first, last)
 */
+template <class RandomIter>
+void partial_sort(RandomIter first, RandomIter middle, RandomIter last) {
+    saberstl::make_heap(first, middle);
+    for (auto i = middle; i < last; i++) {
+        if (*i < *first) saberstl::pop_heap_aux(first, middle, i, *i, distance_type(first));
+    }
+    saberstl::sort_heap(first, middle);
+}
+
+// overload version with compare object
+template <class RandomIter, class Compare>
+void partial_sort(RandomIter first, RandomIter middle, RandomIter last, Compare comp) {
+    saberstl::make_heap(first, middle);
+    for (auto i  = middle; i < last; i++) {
+        if (comp(*i, *first)) saberstl::pop_heap_aux(first, middle, i, *i, distance_type(first), comp);
+    }
+    saberstl::sort_heap(first, middle, comp);
+}
 
 
 /*
