@@ -1731,8 +1731,22 @@ RandomIter partial_sort_copy(InputIter first, InputIter last, RandomIter result_
 
 /*
  * partition()
- *  
+ * Relocate the elements which make the unary return 'true' in front of the sequence
+ * Not safe
 */
+template <class BidirectionalIter, class UnaryPredicate>
+BidirectionalIter partition(BidirectionalIter first, BidirectionalIter last, UnaryPredicate unary_pred) {
+    while (true) {
+        while (first != last && unary_pred(*first)) first++;
+        if (first == last) break;
+        last--;
+        while (first != last && !unary_pred(*last)) last--;
+        if (first == last) break;
+        saberstl::iter_swap(first, last);
+        first++;
+    }
+    return first;
+}
 
 
 /*
