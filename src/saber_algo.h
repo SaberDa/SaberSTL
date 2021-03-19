@@ -1677,9 +1677,56 @@ void partial_sort(RandomIter first, RandomIter middle, RandomIter last, Compare 
 
 /*
  * partial_sort_copy()
- * 
- *  
+ * Simslar to the partial_sort(), copy the result into 'result'
 */
+template <class InputIter, class RandomIter, class Distance>
+RandomIter psort_copy_aux(InputIter first, InputIter last, RandomIter result_first, RandomIter result_last, Distance*) {
+    if (result_first == result_last) return result_first;
+    auto result_iter = result_first;
+    while (first != last && result_iter != result_last) {
+        *result_iter = *first++;
+        result_iter++;
+    }
+    saberstl::make_heap(result_first, result_iter);
+    while (first != last) {
+        if (*first < *result_first) {
+            saberstl::adjust_heap(result_first, static_cast<Distance>(0), result_iter - result_first, *first);
+        }
+        first++;
+    }
+    saberstl::sort_heap(result_first, result_iter);
+    return result_iter;
+}
+
+template <class InputIter, class RandomIter>
+RandomIter partial_sort_copy(InputIter first, InputIter last, RandomIter result_first, RandomIter result_last) {
+    return saberstl::psort_copy_aux(first, last, result_first, result_last, distance_type(result_first));
+}
+
+// overload version with compare object
+template <class InputIter, class RandomIter, class Distance, class Compare>
+RandomIter psort_copy_aux(InputIter first, InputIter last, RandomIter result_first, RandomIter result_last, Distance*, Compare comp) {
+    if (result_first == result_last) return result_first;
+    auto result_iter = result_first;
+    while (first != last && result_iter != result_last) {
+        *result_iter = *first++;
+        result_iter++;
+    }
+    saberstl::make_heap(result_first, result_iter);
+    while (first != last) {
+        if (comp(*first, *result_first)) {
+            saberstl::adjust_heap(result_first, static_cast<Distance>(0), result_iter - result_first, *first, comp);
+        }
+        first++;
+    }
+    saberstl::sort_heap(result_first, result_iter, comp);
+    return result_iter;
+}
+
+template <class InputIter, class RandomIter, class Compare>
+RandomIter partial_sort_copy(InputIter first, InputIter last, RandomIter result_first, RandomIter result_last, Compare comp) {
+    return saberstl::psort_copy_aux(first, last, result_first, result_last, distance_type(result_first), comp);
+}
 
 
 /*
