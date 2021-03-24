@@ -1773,15 +1773,52 @@ partition_copy(InputIter first, InputIter last, OutputIter1 result_true, OutputI
 
 /*
  * nth_element()
- * 
+ * Put the elements which less then the nth element at the front of the new range
 */
+// template <class RandomIter>
+// void nth_element(RandomIter first, RandomIter nth, RandomIter last) {
+//     if (nth == last) return;
+//     while (last - first > 3) {
+    //TODO: Finish sort() first
+//         auto cut = saberstl::un
+//     }
+// }
 
 
 /*
  * unique_copy()
- * 
+ * Copy the elements in sorted range [first, last) into 'result'
+ * If there are same elements, we only copy once.
 */
+template <class InputIter, class ForwardIter>
+ForwardIter unique_copy_despatch(InputIter first, InputIter last, ForwardIter result, forward_iterator_tag) {
+    *result = *first;
+    while (++first != last) {
+        if (*result != *first) *++result = *first;
+    }
+    return ++result;
+}
 
+// output_iterator_tag version
+// Due to we can only WRITE while using output_iterator, so we cannot compare *result and *first
+template <class InputIter, class OutputIter>
+OutputIter unique_copy_despatch(InputIter first, InputIter last, OutputIter result, output_iterator_tag) {
+    auto value = *first;
+    *result = value;
+    while (++first != last) {
+        if (value != *first) {
+            value = *first;
+            *++result = value;
+        }
+    }
+    return ++result;
+}
+
+template <class InputIter, class OutputIter>
+OutputIter unique_copy(InputIter first, InputIter last, OutputIter result) {
+    if (first == last) return result;
+    return saberstl::unique_copy_despatch(first, last, result, iterator_category(result));
+}
 
 /*
  * unique()
