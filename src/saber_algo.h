@@ -1751,9 +1751,19 @@ BidirectionalIter partition(BidirectionalIter first, BidirectionalIter last, Una
 
 /*
  * partition_copy()
- * 
+ * Relocate the elements which make the unary return 'true' in front of the sequence
+ * Store the elements return true into 'result_true', and store the rest into 'result_false'
+ * return a 'pair' to point these two range tail
 */
-
+template <class InputIter, class OutputIter1, class OutputIter2, class UnaryPredicate>
+saberstl::pair<OutputIter1, OutputIter2> 
+partition_copy(InputIter first, InputIter last, OutputIter1 result_true, OutputIter2 result_false, UnaryPredicate unary_pred) {
+    for (; first != last; first++) {
+        if (unary_pred(*first)) *result_true++ = *first;
+        else *result_false++ = *first;
+    }
+    return saberstl::pair<OutputIter1, OutputIter2>(result_true, result_false);
+}
 
 /*
  * sort()
