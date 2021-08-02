@@ -1769,7 +1769,103 @@ partition_copy(InputIter first, InputIter last, OutputIter1 result_true, OutputI
  * sort()
  * 
 */
+// The size of small section. We use this size to do the insert sort.
+constexpr static size_t kSmallSectionSize = 128;
 
+template <class Size>
+Size slg2(Size n) {
+    // Find the largest value where lgk <= n
+    Size k = 0;
+    for (; n > 1; n >>= 1) ++k;
+    return k;
+}
+
+// divide function unchecked_partition
+template <class RandomIter, class T>
+RandomIter unchecked_partition(RandomIter first, RandomIter last, const T& pivot) {
+    while (true) {
+        while (*first < pivot) first++;
+        last--;
+        while (*last > pivot) last--;
+        if (!(first < last)) return first;
+        saberstl::iter_swap(first, last);
+        first++;
+    }
+}
+
+// Intro_sort
+// First do the quick sort, and will use heap sort when the segmentation behavior tends to deteriorate
+template <class RandomIter, class Size>
+void intro_sort(RandomIter first, RandomIter last, Size depth_limit) {
+    while (static_cast<size_t>(last - first) > kSmallSectionSize) {
+        if (depth_limit == 0) {
+            saberstl::partial_sort(first, last, last);
+            return;
+        }
+        depth_limit--;
+        auto mid = saberstl::median(*(first), *(first + (last - first) / 2), *(last - 1));
+        auto cut = saberstl::unchecked_partition(first, last, mid);
+        saberstl::intro_sort(cut, last, depth_limit);
+        last = cut;
+    }
+}
+
+// Insert_sort auxiliary function unchecked_linear_insert
+template <class RandomIter, class T> 
+void unchecked_linear_insert(RandomIter last, const T& value) {
+    auto next = last;
+    next--;
+    while (value < *next) {
+        *last = *next;
+        last = next;
+        next--;
+    }
+    *last = value;
+}
+
+// Insert_sort function unchecked_insertion_sort
+template <class RandomIter>
+void unchecked_insertion_sort(RandomIter first, RandomIter last) {
+    for (auto i = first; i != last; i++) {
+        saberstl::unchecked_linear_insert(i, *i);
+    }
+}
+
+// Insert_sort function insertion_sort
+template <class RandomIter>
+void insertion_sort(RandomIter first, RandomIter last) {
+    if (first == last) return;
+    for (auto i = first + 1; i != last; i++) {
+        auto value = *i;
+        if (value < *first) {
+            saberstl::copy_backward(first, i, i + 1);
+            *first = value;
+        } else {
+            saberstl::unchecked_linear_insert(i, value);
+        }
+    }
+}
+
+// final_insertion_sort
+template <class RandonIter>
+void final_insertion_sort(RandonIter first, RandonIter last) {
+    if (static_cast<size_t>(last - first) > kSmallSectionSize) {
+        saberstl::insertion_sort(first, first + kSmallSectionSize);
+        saberstl::unchecked_insertion_sort(first + kSmallSectionSize, last);
+    } else {
+        saberstl::insertion_sort(first, last);
+    }
+}
+
+template <class RandomIter>
+void sort(RandomIter first, RandomIter last) {
+    if (first != last) {
+        // intro_sort, first divide the whole section into small sections
+        // then do the insertion sort for them
+        saberstl::intro_sort(first, last, slg2(last - first) * 2);
+        saberstl::final_insertion_sort(first, last);
+    }
+}
 
 /*
  * nth_element()
