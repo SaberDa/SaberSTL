@@ -1867,6 +1867,87 @@ void sort(RandomIter first, RandomIter last) {
     }
 }
 
+// Overload version for Insert_sort
+// Use 'comp' to replace the compare operation
+template <class RandomIter, class T, class Compared>
+RandomIter unchecked_partition(RandomIter first, RandomIter last, const T& pivot, Compared comp) {
+    while (true) {
+        while (comp(*first, *last)) first++;
+        last--;
+        while (comp(pivot, *last)) last--;
+        if (!(first < last)) return first;
+        saberstl::iter_swap(first, last);
+        first++;
+    }
+}
+
+template <class RandomIter, class Size, class Compared>
+void intro_sort(RandomIter first, RandomIter last, Size depth_limit, Compared comp) {
+    while (static_cast<size_t>(last - first) > kSmallSectionSize) {
+        if (depth_limit == 0) {
+            saberstl::partial_sort(first, last, last, comp);
+            return;
+        }
+        depth_limit--;
+        auto mid = saberstl::median(*(first), *(first + (last - first) / 2), *(last - 1));
+        auto cut = saberstl::unchecked_partition(first, last, mid, comp);
+        saberstl::intro_sort(cut, last, depth_limit, comp);
+        last = cut;
+    }
+}
+
+template <class RandomIter, class T, class Compared>
+void unchecked_linear_insert(RandomIter last, const T& value, Compared comp) {
+    auto next = last;
+    next--;
+    while (comp(value, *next)) {
+        *last = *next;
+        last = next;
+        next--;
+    }
+    *last = value;
+}
+
+template <class RandomIter, class Compared>
+void unchecked_insertion_sort(RandomIter first, RandomIter last, Compared comp) {
+    for (auto i = first; i != last; i++) {
+        saberstl::unchecked_linear_insert(i, i*, comp);
+    }
+}
+
+template <class RandomIter, class Compared>
+void insertion_sort(RandomIter first, RandomIter last, Compared comp) {
+    if (first == last) return;
+    for (auto i = first + 1; i != last; i++) {
+        auto value = *i;
+        if (comp(value, *first)) {
+            saberstl::copy_backward(first, i, i + 1);
+            *first = value;
+        } else {
+            saberstl::unchecked_linear_insert(i, value, comp);
+        }
+    }
+}
+
+template <class RandomIter, class Compared> 
+void final_insertion_sort(RandomIter first, RandomIter last, Compared comp) {
+    if (static_cast<size_t>(last - first) > kSmallSectionSize) {
+        saberstl::insertion_sort(first, first + kSmallSectionSize, comp);
+        saberstl::unchecked_insertion_sort(first + kSmallSectionSize, last, comp);
+    } else {
+        saberstl::insertion_sort(first, last, comp);
+    }
+}
+
+template <class RandomIter, class Compared>
+void sort(RandomIter first, RandomIter last, Compared comp) {
+    if (first != last) {
+        saberstl::intro_sort(first, last, slg2(last - first) * 2, comp);
+        saberstl::final_insertion_sort(first, last, comp);
+    }
+}
+
+
 /*
  * nth_element()
  * Put the elements which less then the nth element at the front of the new range
