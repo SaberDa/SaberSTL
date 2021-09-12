@@ -1985,7 +1985,7 @@ void nth_element(RandomIter first, RandomIter last, RandomIter nth, Compared com
  * If there are same elements, we only copy once.
 */
 template <class InputIter, class ForwardIter>
-ForwardIter unique_copy_despatch(InputIter first, InputIter last, ForwardIter result, forward_iterator_tag) {
+ForwardIter unique_copy_dispatch(InputIter first, InputIter last, ForwardIter result, forward_iterator_tag) {
     *result = *first;
     while (++first != last) {
         if (*result != *first) *++result = *first;
@@ -1996,7 +1996,7 @@ ForwardIter unique_copy_despatch(InputIter first, InputIter last, ForwardIter re
 // output_iterator_tag version
 // Due to we can only WRITE while using output_iterator, so we cannot compare *result and *first
 template <class InputIter, class OutputIter>
-OutputIter unique_copy_despatch(InputIter first, InputIter last, OutputIter result, output_iterator_tag) {
+OutputIter unique_copy_dispatch(InputIter first, InputIter last, OutputIter result, output_iterator_tag) {
     auto value = *first;
     *result = value;
     while (++first != last) {
@@ -2011,7 +2011,7 @@ OutputIter unique_copy_despatch(InputIter first, InputIter last, OutputIter resu
 template <class InputIter, class OutputIter>
 OutputIter unique_copy(InputIter first, InputIter last, OutputIter result) {
     if (first == last) return result;
-    return saberstl::unique_copy_despatch(first, last, result, iterator_category(result));
+    return saberstl::unique_copy_dispatch(first, last, result, iterator_category(result));
 }
 
 /*
