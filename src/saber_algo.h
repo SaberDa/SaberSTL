@@ -2016,9 +2016,27 @@ OutputIter unique_copy(InputIter first, InputIter last, OutputIter result) {
 
 /*
  * unique()
- * 
+ * Remove the repeated elements in range [first, last)
+ * The list must be ordered
+ * It is same as remove(). It doesn't delete the elements.
 */
-
+template <class ForwardIter>
+ForwardIter unique(ForwardIter first, ForwardIter last) {
+    first = saberstl::adjacent_find(first, last);
+    return saberstl::unique_copy(first, last, first);
 }
+
+// overload version
+template <class ForwardIter, class Compared>
+ForwardIter unique(ForwardIter first, ForwardIter last, Compared comp) {
+    first = saberstl::advance_dispatch(first, last, comp);
+    return saberstl::unique_copy(first, last, first, comp);
+}
+
+} // namespace saberstl
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // !__SABERSTL__ALGO_H_
