@@ -1952,14 +1952,31 @@ void sort(RandomIter first, RandomIter last, Compared comp) {
  * nth_element()
  * Put the elements which less then the nth element at the front of the new range
 */
-// template <class RandomIter>
-// void nth_element(RandomIter first, RandomIter nth, RandomIter last) {
-//     if (nth == last) return;
-//     while (last - first > 3) {
-    //TODO: Finish sort() first
-//         auto cut = saberstl::un
-//     }
-// }
+template <class RandomIter>
+void nth_element(RandomIter first, RandomIter nth, RandomIter last) {
+    if (nth == last) return;
+    while (last - first > 3) {
+        auto cut = saberstl::unchecked_partition(first, last, saberstl::median(
+            *first, *(first + (last - first) / 2), *(last - 1)
+        ));
+        if (cut <= nth) first = cut;
+        else last = cut;
+    }
+    saberstl::insertion_sort(first, last);
+}
+// overload version
+template <class RandomIter, class Compared>
+void nth_element(RandomIter first, RandomIter last, RandomIter nth, Compared comp) {
+    if (nth == last) return;
+    while (last - first > 3) {
+        auto cut = saberstl::unchecked_partition(first, last, saberstl::median(
+            *first, *(first + (last - first) / 2), *(last - 1)
+        ), comp);
+        if (cut <= nth) first = cut;
+        else last = cut;
+    }
+    saberstl::insertion_sort(first, last, comp);
+}
 
 
 /*
