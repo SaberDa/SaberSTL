@@ -233,7 +233,34 @@ struct char_traits<char32_t> {
 // Parameter 2 represents the solution of extraction type of string, default using saberstl::char_traits
 template <class CharType, class CharTraits = saberstl::char_traits<CharType>>
 class basic_string {
-    
+public:
+    typedef CharTraits                                  traits_type;
+    typedef CharTraits                                  char_traits;
+
+    typedef saberstl::allocator<CharType>               allocator_type;
+    typedef saberstl::allocator<CharType>               data_allocator;
+
+    typedef typename allocator_type::value_type         value_type;
+    typedef typename allocator_type::pointer            pointer;
+    typedef typename allocator_type::const_pointer      const_pointer;
+    typedef typename allocator_type::reference          reference;
+    typedef typename allocator_type::const_reference    const_reference;
+    typedef typename allocator_type::difference_type    difference_type;
+
+    typedef value_type*                                 iterator;
+    typedef const value_type*                           const_iterator;
+    typedef saberstl::reverse_iterator<iterator>        reverse_iterator;
+    typedef saberstl::reverse_iterator<const_iterator>  const_reverser_iterator;
+
+    allocator_type get_allocator() {
+        return allocator_type();
+    }
+
+    static_assert(std::is_pod<CharType>::value, 
+                  "Character type of basic_string must be a POD");
+    static_assert(std::is_same<CharType, typename traits_type::char_type>::value,
+                  "Character must be same as traits_type::char_type");
+
 };
 
 } // namespace saberstl
