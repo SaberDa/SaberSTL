@@ -61,7 +61,36 @@ struct char_traits {
             *dst = ch;
         return r;
     }
-};
+}; // struct char_traits
+
+// Partialized char_traits<char>
+template <>
+struct char_traits<char> {
+
+    typedef char char_type;
+
+    static size_t length(const char_type* str) noexcept {
+        return std::strlen(str);
+    }
+
+    static int compare(const char_type* s1, const char_type* s2, size_t n) noexcept {
+        return std::memcmp(s1, s2, n);
+    }
+
+    static char_type* copy(char_type* dst, const char_type* src, size_t n) noexcept {
+        SABERSTL_DEBUG(src + n <= dst || dst + n <= src);
+        return static_cast<char_type*>(std::memcpy(dst, src, n));
+    }
+
+    static char_type* move(char_type* dst, const char_type* src, size_t n) noexcept {
+        return static_cast<char_type*>(std::memmove(dst, src, n));
+    }
+
+    static char_type* fill(char_type* dst, char_type ch, size_t count) noexcept {
+        return static_cast<char_type*>(std::memset(dst, ch, count));
+    }
+    
+}; // struct char_traits<char>
 
 } // namespace saberstl
 
