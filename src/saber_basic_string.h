@@ -225,6 +225,17 @@ struct char_traits<char32_t> {
 
 }; // struct char_traits<char32_t> 
 
+// Initialize the minimize buffer size of the basic_string 
+#define STRING_INTI_SIZE 32
+
+// template class basic_string
+// Parameter 1 represents the type of string;
+// Parameter 2 represents the solution of extraction type of string, default using saberstl::char_traits
+template <class CharType, class CharTraits = saberstl::char_traits<CharType>>
+class basic_string {
+    
+};
+
 } // namespace saberstl
 
 #endif // SABERSTL_BASIC_STRING_H
