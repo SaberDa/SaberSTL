@@ -261,6 +261,16 @@ public:
     static_assert(std::is_same<CharType, typename traits_type::char_type>::value,
                   "Character must be same as traits_type::char_type");
 
+public:
+    // Handle the last point value, ex:
+    // if (str.find('a') != string::npos) { /* do something */ }
+    static constexpr size_type npos = static_cast<size_type>(-1);
+
+private:
+    iterator buffer_;   // Store the initial address of string
+    size_type size_;    // Store the size of string
+    size_type cap_;     // Store the capacity of string
+
 };
 
 } // namespace saberstl
