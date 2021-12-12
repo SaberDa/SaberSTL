@@ -271,6 +271,61 @@ private:
     size_type size_;    // Store the size of string
     size_type cap_;     // Store the capacity of string
 
+public:
+    
+    basic_string() noexcept {
+        try_init();
+    }
+
+    basic_string(size_type n, value_type ch) : buffer_(nullptr), size_(0), cap_(0) {
+        fill_init();
+    }
+
+    basic_string(const basic_string& other, size_type pos)
+    : buffer_(nullptr), size_(0), cap_(0) {
+        init_from(other.buffer_, pos, other.size_ - pos);
+    }
+    basic_string(const basic_string& other, size_type pos, size_type count) 
+    : buffer_(nullptr), size_(0), cap_(0) {
+        init_from(other.buffer_, pos, count);
+    }
+
+    basic_string(const_pointer str) : buffer_(nullptr), size_(0), cap_(0) {
+        init_from(str, 0, char_traits::length(str));
+    }
+    basic_string(const_pointer str, size_type count) 
+    : buffer_(nullptr), size_(0), cap_(0) {
+        init_from(str, 0, count);
+    }
+
+    template <class Iter, typename std::enable_if<
+      saberstl::is_input_iterator<Iter>::value, int>::type = 0>
+    basic_string(Iter first, Iter last) {
+        copy_init(first, last, iterator_category(first));
+    }
+
+    basic_string(const basic_string& rhs) 
+    :buffer_(nullptr), size_(0), cap_(0) {
+        init_from(rhs.buffer_, 0, rhs.size_);
+    }
+        
+    basic_string(basic_string && rhs) noexcept
+    : buffer_(rhs.buffer_), size_(rhs.size_), cap_(rhs.cap_) {
+        rhs.buffer_ = nullptr;
+        rhs.size_ = 0;
+        rhs.cap_ = 0;
+    }
+
+    basic_string& operator=(const basic_string& rhs);
+    basic_string& operator=(basic_string&& rhs) noexcept;
+
+    basic_string& operator=(const_pointer str);
+    basic_string& operator=(value_type ch);
+
+    ~basic_string() {
+        destory_buffer();
+    }
+
 };
 
 } // namespace saberstl
